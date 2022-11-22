@@ -1,5 +1,6 @@
-import splitter
-import chunks2spectogram
-if  __name__ == "__main__":
-    splitter()
-    chunks2spectogram()
+from splitter import track2chunks
+from chunks2spectogram import chunk2spectogram
+
+if __name__ == "__main__":
+    track2chunks()
+    chunk2spectogram()

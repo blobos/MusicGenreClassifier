@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-def chunks2spectogram():
+#torchaudio MelSpectogram instead of librosa?
+
+def chunk2spectogram():
     output_directory = "/media/aaron/My Passport/FYP/spectograms/"
     chunk_directory = '/media/aaron/My Passport/FYP/chunks/'
 
@@ -24,7 +26,8 @@ def chunks2spectogram():
                         n_fft = 2048  # The amount of samples we are shifting after each fft (window size
                         hop_length = 512  # Short-time Fourier Transformation on our audio data
 
-                        S = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
+                        S = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=n_fft, hop_length=hop_length,
+                                                           n_mels=n_mels)
                         S_DB = librosa.power_to_db(S, ref=np.max)
                         librosa.display.specshow(S_DB, sr=sr, hop_length=hop_length, x_axis='time', y_axis='mel')
                         plt.axis('off')
