@@ -2,7 +2,18 @@ from pydub import AudioSegment
 import os
 import csv
 
+GENRES = [
+    "Metal",
+    "Rock",
+    "Electronic",
+    "Jazz",
+    "Classical",
+    "Pop"
+]
 
+SUBGENRES = ["Black", "Death", "Thrash",
+             "Sludge", "Alternative", "Dreampop", "Indie", "Post", "Progressive", "Psychedelic",
+             "Synthwave", "Techno", "House", "Trance"]
 # to do:
 # audio adjustments?
 def track2chunks():
@@ -11,7 +22,7 @@ def track2chunks():
     csv_directory = "/media/aaron/My Passport/FYP/"
 
     # CSV
-    header = ["Genre", "Subgenre", "Subgenre Track Number", "Filename"]
+    header = ["Genre", "Genre Index", "Subgenre", "Subgenre Index", "Subgenre Track Number", "Filename"]
     with open(csv_directory + "track_genre_label.csv", "w") as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(header)

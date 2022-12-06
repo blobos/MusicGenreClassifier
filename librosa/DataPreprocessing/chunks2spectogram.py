@@ -28,7 +28,9 @@ def chunk2spectogram():
 
                         S = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=n_fft, hop_length=hop_length,
                                                            n_mels=n_mels)
+                        ## log spectogram to percieved by humans
                         S_DB = librosa.power_to_db(S, ref=np.max)
+
                         librosa.display.specshow(S_DB, sr=sr, hop_length=hop_length, x_axis='time', y_axis='mel')
                         plt.axis('off')
 
