@@ -1,5 +1,8 @@
 import torch
-from train import FeedForwardNet, download_mnist_datasets
+import torchaudio
+from CNN import CNNNetwork
+from UrbanSoundDataset import UrbanSoundDataset
+from train import AUDIO_DIR, ANNOTATIONS_FILE, SAMPLE_RATE, NUM_SAMPLES
 
 # genre_mapping = [
 #     "rock",
@@ -8,8 +11,20 @@ from train import FeedForwardNet, download_mnist_datasets
 # ]
 
 ##subgenre_mapping = ["black",
+# infer on multiple segments
 
-class_mapping = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+class_mapping = [
+    "air_conditioner",
+    "car_horn",
+    "children_playing",
+    "dog_bark",
+    "drilling",
+    "engine_idling",
+    "gun_shot",
+    "jackhammer",
+    "siren",
+    "street_music"
+]
 
 
 def predict(model, input, target, class_mapping):
@@ -28,18 +43,36 @@ def predict(model, input, target, class_mapping):
 
 if __name__ == "__main__":
     # load model back
-    feed_forward_net = FeedForwardNet()
-    state_dict = torch.load("lastest.pth")
-    feed_forward_net.load_state_dict(state_dict)
+    cnn = CNNNetwork()
+    state_dict = torch.load("latest.pth", map_location=torch.device('cpu'))
+    cnn.load_state_dict(state_dict)
 
-    # load MNIST validation dataset
-    _, validation_data = download_mnist_datasets()  # _ since not intersted in train component
+    # load urban sound dataset
+    mel_spectrogram = torchaudio.transforms.MelSpectrogram(
+        sample_rate=SAMPLE_RATE,  # samples per sec
+        n_fft=1024,
+        hop_length=512,
+        n_mels=64
+    )  # callable object (self.transformation)
 
-    # get sample from validation dataset for inference
-    input, target = validation_data[1][0], validation_data[1][1]
-    # for own project since genre, subgenre have 2 targets?
+    # constructor
+    usd = UrbanSoundDataset(ANNOTATIONS_FILE,
+                            AUDIO_DIR,
+                            mel_spectrogram,
+                            SAMPLE_RATE,
+                            NUM_SAMPLES,
+                            "cpu")  # no need to run on GPU
+
+    # get sample from urban sound dataset for inference
+    input, target = usd[1][0], usd[1][1]  # tensor is 3 dim, but we need 4 since batch_size --> [batch_size , num_channels, fr, time]
+    print(usd[1])
+    print(usd[1][0])
+    print(input.shape)
+    input.unsqueeze_(0)  # underscore helps put in extra dim(batch_size)
+    print(input.shape)
+    print(target.shape)
+    print(usd[1][1])
 
     # make inference
-    predicted, expected = predict(feed_forward_net, input, target,
-                                  class_mapping)  # map integers to class(genre)
+    predicted, expected = predict(cnn, input, target, class_mapping)  # map integers to class(genre)
     print(f"Predicted: '{predicted}', expected: '{expected}'")

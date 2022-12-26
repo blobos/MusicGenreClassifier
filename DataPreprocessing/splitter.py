@@ -2,18 +2,42 @@ from pydub import AudioSegment
 import os
 import csv
 
-GENRES = [
-    "Metal",
-    "Rock",
-    "Electronic",
-    "Jazz",
-    "Classical",
-    "Pop"
-]
+# GENRES = [
+#     "Metal",
+#     "Rock",
+#     "Electronic",
+#     "Jazz",
+#     "Classical",
+#     "Pop"
+# ]
+#
+# SUBGENRES = ["Black", "Death", "Thrash",
+#              "Sludge", "Alternative", "Dreampop", "Indie", "Post", "Progressive", "Psychedelic",
+#              "Synthwave", "Techno", "House", "Trance"]
 
-SUBGENRES = ["Black", "Death", "Thrash",
-             "Sludge", "Alternative", "Dreampop", "Indie", "Post", "Progressive", "Psychedelic",
-             "Synthwave", "Techno", "House", "Trance"]
+SUBGENRES = ["Black Metal",
+             "Death Metal",
+             "Thrash Metal",
+             "Sludge Metal",
+             "Alternative Rock",
+             "Dreampop (Rock)",
+             "Indie Rock",
+             "Post Rock",
+             "Progressive Rock",
+             "Psychedelic Rock",
+             "Folk Rock",
+             "Synthwave (Electronic)",
+             "Techno (Electronic)",
+             "House (Electronic)",
+             "Trance (Electronic)",
+             "Classical",
+             "Pop",
+             "Indie Pop"]
+#add Classical subgenres? Experimental subgenre? Classic Rock? Glam Rock?
+
+INTERVAL = 30 * 1000  # pydub calculates in millisec
+OVERLAP = 15 * 1000
+
 # to do:
 # audio adjustments?
 def track2chunks():
@@ -36,39 +60,42 @@ def track2chunks():
             for subgenre in os.listdir(genre_directory):
                 print("subgenre: ", subgenre)
                 subgenre_directory = os.path.join(genre_directory, subgenre)
+                #dictionary/mapping??
+                subgenreID =
+
                 subgenre_track_counter = 1
                 for track in os.listdir(subgenre_directory):
                     print("track: ", track)
                     track_path = os.path.join(subgenre_directory, track)
                     #load audio track
                     audio_track = AudioSegment.from_file(track_path)
-                    #write to csv
-                    entry = [genre, subgenre, subgenre_track_counter, track]
-                    print(entry)
-                    writer.writerow(entry)
                     # Split to Chunk
-                    n = len(audio_track)
-                    print(n)
-                    interval = 30 * 1000  # pydub calculates in millisec
-                    overlap = 15 * 1000
+                    track_length = len(audio_track)
+                    print(track_length)
+
                     # Make chunks of one sec
                     chunk_counter = 1
+                    #write to csv
+                    total_subgenre_track_chunks = track_length/(INTERVAL-OVERLAP)#30 sec chunks with 15 overlap
+                    entry = [genre, subgenre, subgenreID, subgenre_track_counter, total_subgenre_track_chunks, track]
+                    print(entry)
+                    writer.writerow(entry)
 
                     # Iterate from 0 to end of the file,
                     # with increment = interval
                     # why 2 n
                     # for i in range(0, 2 * n, interval):
-                    for i in range(0, n * 2, interval):
+                    for i in range(0, track_length * 2, INTERVAL):
                         if i == 0:
                             start = 0
-                            end = interval
+                            end = INTERVAL
                             chunk = audio_track[start:end]
                         else:
-                            start = end - overlap
-                            end = start + interval
+                            start = end - OVERLAP
+                            end = start + INTERVAL
                             chunk = audio_track[start:end]
 
-                            if end >= n:
+                            if end >= track_length:
                                 continue
 
                         sort_name = subgenre + "_" + genre + "_" + str("%04d" % (subgenre_track_counter,))
