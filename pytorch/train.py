@@ -2,9 +2,7 @@ import torch
 import torchaudio
 from torch import nn
 from torch.utils.data import DataLoader
-from torchvision import datasets
-from torchvision.transforms import ToTensor
-from UrbanSoundDataset import UrbanSoundDataset
+from DataPreprocessing.Preprocess import Preprocess
 from CNN import CNNNetwork
 
 BATCH_SIZE = 1
@@ -12,12 +10,14 @@ EPOCHS = 10
 LEARNING_RATE = 0.001
 checkpointDirectory = "./checkpoint/"
 
-ANNOTATIONS_FILE = r"Y:\MusicGenreClassifier\pytorch\data\UrbanSound8K\metadata\UrbanSound8K.csv"
-AUDIO_DIR = r"Y:\MusicGenreClassifier\pytorch\data\UrbanSound8K\audio"
+ANNOTATIONS_FILE = r"/FYP/data/train/train_annotations.csv"
+AUDIO_DIR = r"/FYP/data/train/chunks/"
+
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 
-#train on individual segments
+
+# train on individual segments
 
 def create_data_loader(train_data, batch_size):
     train_data_loader = DataLoader(train_data, batch_size=batch_size)
@@ -68,15 +68,15 @@ if __name__ == "__main__":
     )  # callable object (self.transformation)
 
     # constructor
-    usd = UrbanSoundDataset(ANNOTATIONS_FILE,
-                            AUDIO_DIR,
-                            mel_spectrogram,
-                            SAMPLE_RATE,
-                            NUM_SAMPLES,
-                            device)
-    print(f"There are {len(usd)} samples in the dataset.")
+    chunk = Preprocess(ANNOTATIONS_FILE,
+                       AUDIO_DIR,
+                       mel_spectrogram,
+                       SAMPLE_RATE,
+                       NUM_SAMPLES,
+                       device)
+    print(f"There are {len(chunk)} samples in the dataset.")
     # train_data_loader
-    train_data_loader = create_data_loader(usd, batch_size=BATCH_SIZE)
+    train_data_loader = create_data_loader(chunk, batch_size=BATCH_SIZE)
     # validation_data_loader
 
     cnn = CNNNetwork().to(device)

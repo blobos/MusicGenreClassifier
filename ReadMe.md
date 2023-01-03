@@ -1,9 +1,14 @@
 Error: input: NoneType in train.py and inference.py - not accessing file? but printing still gives tensor
 
-to do: 
-preprocessing parallel pooling, csv to format (filepath, classID, Class)
-dictionary/mapping ID? rather than if statements?
-make script for store multiple inferences
+Aggregating inference: 
+track ID or filepath enough?
+iterate:
+for all with same trackID?  or for total_subgenre_track_chunks with trackID?
 
-notes:
+to do: 
+preprocessing parallel pooling
+make script for store multiple inferences 
+
+changes:
 no conversion to mel spec - done in train/inference
+ csv to format (filepath, track_chunk_#, total_track_chunks, classID, Class)

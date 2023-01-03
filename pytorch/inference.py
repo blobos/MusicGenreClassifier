@@ -2,7 +2,7 @@ import torch
 import torchaudio
 from CNN import CNNNetwork
 from UrbanSoundDataset import UrbanSoundDataset
-from train import AUDIO_DIR, ANNOTATIONS_FILE, SAMPLE_RATE, NUM_SAMPLES
+from train import AUDIO_DIR, SAMPLE_RATE, NUM_SAMPLES
 
 # genre_mapping = [
 #     "rock",
@@ -12,6 +12,7 @@ from train import AUDIO_DIR, ANNOTATIONS_FILE, SAMPLE_RATE, NUM_SAMPLES
 
 ##subgenre_mapping = ["black",
 # infer on multiple segments
+ANNOTATIONS_FILE = "/FYP/data/predict/predict_annotations.csv"
 
 class_mapping = [
     "air_conditioner",
@@ -27,7 +28,7 @@ class_mapping = [
 ]
 
 
-def predict(model, input, target, class_mapping):
+def predict(model, input, class_mapping):
     model.eval()  # turns off batch norm, dropout vs model.train()
     with torch.no_grad():  # context manager: model doesn't calculate gradient
         predictions = model(input)
@@ -36,9 +37,9 @@ def predict(model, input, target, class_mapping):
         predicted_index = predictions[0].argmax(0)  # argmax argument??? 0 axis???
         # map index to class
         predicted = class_mapping[predicted_index]
-        expected = class_mapping[target]
+        # expected = class_mapping[target]
 
-        return predicted, expected
+        return predicted
 
 
 if __name__ == "__main__":
@@ -64,15 +65,18 @@ if __name__ == "__main__":
                             "cpu")  # no need to run on GPU
 
     # get sample from urban sound dataset for inference
-    input, target = usd[1][0], usd[1][1]  # tensor is 3 dim, but we need 4 since batch_size --> [batch_size , num_channels, fr, time]
+
+    #load track
+    #For loop trackID or track chunk count
+    for track in usd[]
+    input = usd[1][0]  # tensor is 3 dim, but we need 4 since batch_size --> [batch_size , num_channels, fr, time]
     print(usd[1])
     print(usd[1][0])
     print(input.shape)
     input.unsqueeze_(0)  # underscore helps put in extra dim(batch_size)
     print(input.shape)
-    print(target.shape)
     print(usd[1][1])
 
     # make inference
-    predicted, expected = predict(cnn, input, target, class_mapping)  # map integers to class(genre)
-    print(f"Predicted: '{predicted}', expected: '{expected}'")
+    predicted = predict(cnn, input, class_mapping)  # map integers to class(genre)
+    print(f"Predicted: '{predicted}'")

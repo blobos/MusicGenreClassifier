@@ -18,7 +18,7 @@ import csv
 SUBGENRES = ["Black Metal",
              "Death Metal",
              "Thrash Metal",
-             "Sludge Metal",
+             "Doom Metal",
              "Alternative Rock",
              "Dreampop (Rock)",
              "Indie Rock",
@@ -37,17 +37,15 @@ SUBGENRES = ["Black Metal",
 
 INTERVAL = 30 * 1000  # pydub calculates in millisec
 OVERLAP = 15 * 1000
+MAX_TRACK_LENGTH = 4 * 60 * 1000
 
 # to do:
 # audio adjustments?
-def track2chunks():
-    input_directory = "/media/aaron/My Passport/FYP/sample_tracks/"
-    output_directory = "/media/aaron/My Passport/FYP/chunks/"
-    csv_directory = "/media/aaron/My Passport/FYP/"
+def track2chunks(input_directory, output_directory, csv_directory):
 
     # CSV
     header = ["Genre", "Genre Index", "Subgenre", "Subgenre Index", "Subgenre Track Number", "Filename"]
-    with open(csv_directory + "track_genre_label.csv", "w") as csv_file:
+    with open(csv_directory, "w") as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow(header)
 
@@ -61,7 +59,43 @@ def track2chunks():
                 print("subgenre: ", subgenre)
                 subgenre_directory = os.path.join(genre_directory, subgenre)
                 #dictionary/mapping??
-                subgenreID =
+                if subgenre == "black":
+                    subgenre_id = 0
+                elif subgenre == "death":
+                    subgenre_id = 1
+                elif subgenre == "thrash":
+                    subgenre_id = 2
+                elif subgenre == "doom":
+                    subgenre_id = 3
+                elif subgenre == "alternative":
+                    subgenre_id = 4
+                elif subgenre == "dreampop":
+                    subgenre_id = 5
+                elif subgenre == "indie":
+                    if genre == "rock":
+                        subgenre_id = 6
+                    elif genre == "pop":
+                        subgenre_id = 17
+                elif subgenre == "post":
+                    subgenre_id = 7
+                elif subgenre == "progressive":
+                    subgenre_id = 8
+                elif subgenre == "psychedelic":
+                    subgenre_id = 9
+                elif subgenre == "folk":
+                    subgenre_id = 10
+                elif subgenre == "synthwave": #drop microgenre?
+                    subgenre_id = 11
+                elif subgenre == "techno":
+                    subgenre_id = 12
+                elif subgenre == "house":
+                    subgenre_id = 13
+                elif subgenre == "trance":
+                    subgenre_id = 14
+                elif subgenre == "classical":
+                    subgenre_id = 15
+                elif subgenre == "pop":
+                    subgenre_id = 16
 
                 subgenre_track_counter = 1
                 for track in os.listdir(subgenre_directory):
@@ -77,7 +111,7 @@ def track2chunks():
                     chunk_counter = 1
                     #write to csv
                     total_subgenre_track_chunks = track_length/(INTERVAL-OVERLAP)#30 sec chunks with 15 overlap
-                    entry = [genre, subgenre, subgenreID, subgenre_track_counter, total_subgenre_track_chunks, track]
+                    entry = [genre, subgenre, subgenre_id, subgenre_track_counter, total_subgenre_track_chunks, track]
                     print(entry)
                     writer.writerow(entry)
 
@@ -85,6 +119,8 @@ def track2chunks():
                     # with increment = interval
                     # why 2 n
                     # for i in range(0, 2 * n, interval):
+                    if track_length > MAX_TRACK_LENGTH:
+                        track_length = MAX_TRACK_LENGTH
                     for i in range(0, track_length * 2, INTERVAL):
                         if i == 0:
                             start = 0
