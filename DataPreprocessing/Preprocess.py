@@ -67,13 +67,15 @@ class Preprocess(Dataset):
         if signal.shape[0] > 1:
             signal = torch.mean(signal, dim=0, keepdim=True)
         return signal
+
     def _get_audio_sample_path(self, index):
+        #audio path fix
         fold = f"fold{self.annotations.iloc[index, 5]}"  # folder of audiofile in USD
-        path = os.path.join(self.audio_dir, fold, self.annotations.iloc[index, 0])
+        path = os.path.join(self.audio_dir, fold, self.annotations.iloc[index, 4])
         return path
 
     def _get_audio_sample_label(self, index):
-        return self.annotations.iloc[index, 6] #6 = Class ID
+        return self.annotations.iloc[index, 1] #1 = Class ID
 
 
 if __name__ == "__main__":
