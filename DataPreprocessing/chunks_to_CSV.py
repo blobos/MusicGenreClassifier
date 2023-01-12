@@ -31,8 +31,9 @@ with open(csv_path, "w", newline='') as csv_file:
                 # black_metal_002_chunk_00of21.mp3
                 subgenre = filename[0] + "_" + filename[1]
                 subgenre_track_counter = filename[2]
-                chunk_number = filename[-2]
-                total_chunk_number = filename[-1]
+                chunk_counters = filename[-1].split(".")
+                chunk_number = chunk_counters[0][0:2]
+                total_chunk_number = chunk_counters[0][4:]
                 for id, subgenre_name in subgenre_map.items():
                     if subgenre == subgenre_name:
                         subgenre_id = id
