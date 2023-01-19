@@ -10,7 +10,7 @@ PREDICT_OUTPUT_DIRECTORY = "/FYP/data/predict/chunks/"
 PREDICT_CSV_DIRECTORY = "/FYP/data/predict/predict_annotations.csv"
 
 if __name__ == "__main__":
-    pool = multiprocessing.Pool()
+
     track2chunks(TRAIN_INPUT_DIRECTORY, TRAIN_OUTPUT_DIRECTORY, TRAIN_CSV_DIRECTORY)
     track2chunks(PREDICT_INPUT_DIRECTORY, PREDICT_OUTPUT_DIRECTORY, PREDICT_CSV_DIRECTORY)
     # chunk2spectogram()

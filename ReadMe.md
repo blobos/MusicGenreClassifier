@@ -16,3 +16,6 @@ Preprocessing Redone
 
 no conversion to mel spec - done in train/inference
  csv to format (filepath, track_chunk_#, total_track_chunks, classID, Class)
+
+
+overfitting because of overlapping training data?

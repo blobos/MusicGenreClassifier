@@ -98,7 +98,7 @@ if __name__ == "__main__":
     ) #callable object (self.transformation)
 
     # constructor
-    usd = UrbanSoundDataset(ANNOTATIONS_FILE,
+    sd = SubgenreDataset(ANNOTATIONS_FILE,
                             AUDIO_DIR,
                             mel_spectrogram,
                             SAMPLE_RATE,
