@@ -26,6 +26,8 @@ def split_audio(file, output_directory):
 
         if track_length > max_track_length:
             track_length = len(audio_track[:max_track_length])
+        else:
+            track_length = track_length - (track_length % (30 * 1000))
 
         chunk_counter = 0
         total_subgenre_track_chunks = len(audio_track) // (chunk_length - overlap)  # 30 sec chunks with 15 overlap
@@ -59,8 +61,8 @@ def split_audio(file, output_directory):
 
 
 if __name__ == "__main__":
-    TRAIN_INPUT_DIRECTORY = "/home/student/Music/1/FYP/data/train/tracks/tracks"  # "/FYP/data/train/tracks/"
-    TRAIN_OUTPUT_DIRECTORY = "/home/student/Music/1/FYP/data/train/tracks/chunks/"  # "data/train/chunks/"
+    TRAIN_INPUT_DIRECTORY = "/home/student/Music/1/FYP/data/train/tracks/"  # "/FYP/data/train/tracks/"
+    TRAIN_OUTPUT_DIRECTORY = "/home/student/Music/1/FYP/data/train/chunks/"  # "data/train/chunks/"
     # TRAIN_CSV_DIRECTORY = "data/train/train_annotations.csv"
     # PREDICT_INPUT_DIRECTORY = "/FYP/data/predict/tracks/"
     # PREDICT_OUTPUT_DIRECTORY = "/FYP/data/predict/chunks/"
