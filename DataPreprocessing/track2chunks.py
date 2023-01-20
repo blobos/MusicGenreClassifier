@@ -1,6 +1,7 @@
 from pydub import AudioSegment
 from multiprocessing import Pool
 import os
+from chunks_to_CSV import chunks2CSV
 import csv
 
 chunk_length = 30 * 1000  # 30 seconds pydub calculates in millisec
@@ -29,10 +30,10 @@ def split_audio(file, output_directory):
         else:
             track_length = track_length - (track_length % (30 * 1000))
 
-        chunk_counter = 0
+        chunk_counter = 1
         total_subgenre_track_chunks = len(audio_track) // (chunk_length - overlap)  # 30 sec chunks with 15 overlap
-        print(file_name, start, track_length)
-        print("-------------------")
+        # print(file_name, start, track_length)
+        # print("-------------------")
         while start < track_length:
             end = start + chunk_length
             chunk = audio_track[start:end]
@@ -40,7 +41,8 @@ def split_audio(file, output_directory):
             sort_name = subgenre + "_" + subgenre_track_counter
             # black_metal_001
             # print("sortname: ",sort_name)
-            output_filename = sort_name + "_chunk_" + str("%02d" % (chunk_counter,)) + 'of' + str(total_subgenre_track_chunks) + '.mp3'
+            output_filename = sort_name + "_chunk_" + str("%02d" % (chunk_counter,)) + 'of' + str(
+                total_subgenre_track_chunks) + '.mp3'
             # print("filename: ", output_filename)
             # black_metal_0001_chunk_01_25.mp3
             chunk_directory = output_directory + subgenre + "/" + sort_name + "/"
@@ -89,3 +91,5 @@ if __name__ == "__main__":
     #     split_audio(file,output_directory)
     with Pool(processes=16) as pool:
         pool.starmap(split_audio, [(file, output_directory) for file in audio_files])
+
+    chunks2CSV()

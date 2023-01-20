@@ -54,7 +54,7 @@ class CNNNetwork(nn.Module):  # inherit for nn.Module (pytorch NN)
         )
         self.flatten = nn.Flatten()
         #why is flatten
-        self.linear = nn.Linear(128 * 5 * 4, 10)
+        self.linear = nn.Linear(128 * 5 * 4, 14)
         # dense layer output shape: (ch * freq axis * time axis, classes) or (in, out)
         self.softmax = nn.Softmax(dim=1)
 

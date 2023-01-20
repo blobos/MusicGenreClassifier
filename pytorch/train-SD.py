@@ -1,103 +1,131 @@
-import os
-
 import torch
 import torchaudio
 from torch import nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
+
 from SubgenreDataset import SubgenreDataset
 from CNN import CNNNetwork
 
-BATCH_SIZE = 1
+from sklearn.metrics import accuracy_score
+
+BATCH_SIZE = 64
 EPOCHS = 10
 LEARNING_RATE = 0.001
-checkpointDirectory = "./checkpoint/"
 
 ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train/train_annotations.csv"
 AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
-
-
-if not os.path.exists(ANNOTATIONS_FILE):
-    raise FileNotFoundError("Annotations file not found at specified path")
-
-if not os.path.exists(AUDIO_DIR):
-    raise FileNotFoundError("Audio directory not found at specified path")
 
 SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 
 
-# train on individual segments
-
-def create_data_loader(train_data, batch_size):
-    train_data_loader = DataLoader(train_data, batch_size=batch_size)
-    return train_data_loader
-
-
-def train_one_epoch(model, data_loader, loss_fn, optimiser, device):
-    for inputs, targets in data_loader:
-        print(inputs)
-        inputs, targets = inputs.to(device), targets.to(device)
-
-        # calculate loss
-        predictions = model(inputs)
-        loss = loss_fn(predictions, targets)
-
-        # backpropgate loss and updates weights
-        optimiser.zero_grad()  # reset gradient after each batch
-        loss.backward()  # backprop
-        optimiser.step()  # update weights
-
-    print(f"Loss: {loss.item()}")
+def create_data_loaders(train_data, validation_data, batch_size):
+    train_dataloader = DataLoader(train_data, batch_size=batch_size)
+    validation_dataloader = DataLoader(validation_data, batch_size=batch_size, shuffle=True)
+    return train_dataloader, validation_dataloader
 
 
-def train(model, data_loader, loss_fn, optimiser, device, epochs):
-    for i in range(epochs):
-        print(f"Epoch {i + 1}")
-        train_one_epoch(model, data_loader, loss_fn, optimiser, device)
-        print("------------------")
-        torch.save(cnn.state_dict(), checkpointDirectory + "latest.pth")
-        if i % 5 == 0:
-            torch.save(cnn.state_dict(), checkpointDirectory + "epoch{i + 1}.pth")
-    print("Training is done")
+def train_single_epoch(model, train_dataloader, loss_fn, optimizer, device):
+    model.train() #train mode (model.eval() turns off dropout, batch norm uses mean and var of whole dataset, instead of batch)
+    train_loss = 0
+    for input, target in train_dataloader:
+        input, target = input.to(device), target.to(device)
+        optimizer.zero_grad() #grad not accumulated from prev batch, else overfit
+        output = model(input)
+        loss = loss_fn(output, target)
+        train_loss += loss.item() #update current loss
+        loss.backward() #calculate gradients
+        optimizer.step() #update parameters using gradients
+    return train_loss / len(train_dataloader)
 
+# Calculate validation loss
+def validation_loss(model, validation_dataloader, loss_fn, device):
+    model.eval()
+    validation_loss = 0
+    correct = 0
+    total = 0
+    with torch.no_grad(): #don't track grad
+        for input, target in validation_dataloader:
+            input, target = input.to(device), target.to(device)
+            output = model(input)
+            validation_loss += loss_fn(output, target).item()
+            _, predicted = torch.max(output.data, 1) #_ = max value (discarded), predicted (class prediction)= index of _
+            total += target.size(0)
+            correct += (predicted == target).sum().item()
+    accuracy = correct / total
+    return validation_loss / len(validation_dataloader), accuracy
+
+def train(model, train_dataloader, validation_dataloader, loss_fn, optimizer, device, epochs, PATIENCE):
+    best_validation_loss = float('inf')
+    best_validation_acc = 0
+    no_improvement = 0
+    for epoch in range(1, epochs + 1):
+        # train the model for one epoch
+        train_loss = train_single_epoch(model, train_dataloader, loss_fn, optimizer, device)
+        # evaluate the model on the validation dataset
+        validation_loss_val, validation_acc = validation_loss(model, validation_dataloader, loss_fn, device)
+        # log the loss and accuracy
+        print(
+            f"Epoch {epoch}, Train Loss: {train_loss:.4f}, Validation Loss: {validation_loss_val:.4f}, Validation Acc: {validation_acc:.4f}")
+        # check if this is the best validation loss and save the model if it is
+        if validation_loss_val < best_validation_loss:
+            best_validation_loss = validation_loss_val
+            best_validation_acc = validation_acc
+            no_improvement = 0
+            torch.save(model.state_dict(), 'best_model.pth')
+        else:
+            no_improvement += 1
+            if no_improvement >= PATIENCE:
+                print(f"Early stopping at epoch {epoch}")
+                break
+    print(f"Best validation loss: {best_validation_loss:.4f}")
+    print(f"Best validation accuracy: {best_validation_acc:.4f}")
 
 if __name__ == "__main__":
     if torch.cuda.is_available():
         device = "cuda"
     else:
         device = "cpu"
-    print(f"Using {device} device")
+    print(f"Using {device}")
 
-    # instantiate dataset obj and create data loader
+    # instantiating our dataset object and create data loader
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
-        sample_rate=SAMPLE_RATE,  # samples per sec
+        sample_rate=SAMPLE_RATE,
         n_fft=1024,
         hop_length=512,
         n_mels=64
-    )  # callable object (self.transformation)
+    )
 
-    # constructor
-    chunk = SubgenreDataset(ANNOTATIONS_FILE,
-                       AUDIO_DIR,
-                       mel_spectrogram,
-                       SAMPLE_RATE,
-                       NUM_SAMPLES,
-                       device)
-    print(f"There are {len(chunk)} samples in the dataset.")
-    # train_data_loader
-    train_data_loader = create_data_loader(chunk, batch_size=BATCH_SIZE)
-    # validation_data_loader
+    train_SD = SubgenreDataset(ANNOTATIONS_FILE,
+                               AUDIO_DIR,
+                               mel_spectrogram,
+                               SAMPLE_RATE,
+                               NUM_SAMPLES,
+                               device)
 
+
+    valid_SD = SubgenreDataset(ANNOTATIONS_FILE,
+                               AUDIO_DIR,
+                               mel_spectrogram,
+                               SAMPLE_RATE,
+                               NUM_SAMPLES,
+                               device)
+
+    train_dataloader = create_data_loaders(train_SD, valid_SD, BATCH_SIZE)
+
+    # construct model and assign it to device
     cnn = CNNNetwork().to(device)
     print(cnn)
 
-    # instantiate loss function + optimiser
+    # initialise loss funtion + optimiser
     loss_fn = nn.CrossEntropyLoss()
-    optimiser = torch.optim.Adam(cnn.parameters(),
+    optimizer = torch.optim.Adam(cnn.parameters(),
                                  lr=LEARNING_RATE)
+
     # train model
-    train(cnn, train_data_loader, loss_fn, optimiser, device, EPOCHS)
+    # train(model, train_dataloader, validation_dataloader, loss_fn, optimizer, device, epochs, PATIENCE):
+    train(cnn, train_dataloader, loss_fn, optimizer, device, EPOCHS)
 
     # save model
-    torch.save(cnn.state_dict(), "cnn.pth")
-    print("Model trained and store at cnn.pth")
+    torch.save(cnn.state_dict(), "test.pth")
+    print("Trained feed forward net saved at test.pth")
