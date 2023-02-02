@@ -22,7 +22,7 @@ class CNNNetwork(nn.Module):  # inherit for nn.Module (pytorch NN)
         self.conv2 = nn.Sequential(
             nn.Conv2d(
                 in_channels=16,  # since downsampled2mono
-                out_channels=32,  # 16 filters
+                out_channels=32,  # 32 filters
                 kernel_size=3,
                 stride=1,
                 padding=2
@@ -33,7 +33,7 @@ class CNNNetwork(nn.Module):  # inherit for nn.Module (pytorch NN)
         self.conv3 = nn.Sequential(
             nn.Conv2d(
                 in_channels=32,  # since downsampled2mono
-                out_channels=64,  # 16 filters
+                out_channels=64,  # 64 filters
                 kernel_size=3,
                 stride=1,
                 padding=2
@@ -44,7 +44,7 @@ class CNNNetwork(nn.Module):  # inherit for nn.Module (pytorch NN)
         self.conv4 = nn.Sequential(
             nn.Conv2d(
                 in_channels=64,  # since downsampled2mono
-                out_channels=128,  # 16 filters
+                out_channels=128,  # 128 filters
                 kernel_size=3,
                 stride=1,
                 padding=2
@@ -54,7 +54,7 @@ class CNNNetwork(nn.Module):  # inherit for nn.Module (pytorch NN)
         )
         self.flatten = nn.Flatten()
         #why is flatten
-        self.linear = nn.Linear(128 * 5 * 4, 10)
+        self.linear = nn.Linear(128 * 5 * 4, 14)
         # dense layer output shape: (ch * freq axis * time axis, classes) or (in, out)
         self.softmax = nn.Softmax(dim=1)
 

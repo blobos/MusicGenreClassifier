@@ -2,7 +2,7 @@ import torch
 import torchaudio
 from CNN import CNNNetwork
 from UrbanSoundDataset import UrbanSoundDataset
-from train import AUDIO_DIR, SAMPLE_RATE, NUM_SAMPLES
+from train-SD import AUDIO_DIR, SAMPLE_RATE, NUM_SAMPLES
 
 # genre_mapping = [
 #     "rock",
@@ -13,6 +13,7 @@ from train import AUDIO_DIR, SAMPLE_RATE, NUM_SAMPLES
 ##subgenre_mapping = ["black",
 # infer on multiple segments
 ANNOTATIONS_FILE = "/FYP/data/predict/predict_annotations.csv"
+AUDIO_DIR = ""
 
 class_mapping = [
     "air_conditioner",
@@ -72,7 +73,7 @@ if __name__ == "__main__":
 
     #load track
     #For loop trackID or track chunk count
-    for track in usd[]
+    # for track in usd[]:
     input = usd[1][0]  # tensor is 3 dim, but we need 4 since batch_size --> [batch_size , num_channels, fr, time]
     print(usd[1])
     print(usd[1][0])

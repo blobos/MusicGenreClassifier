@@ -12,7 +12,7 @@ BATCH_SIZE = 64
 EPOCHS = 10
 LEARNING_RATE = 0.001
 
-ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train/train_annotations.csv"
+ANNOTATIONS_FILE = "/FYP/data/train_annotations.csv"
 AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
 
 SAMPLE_RATE = 22050
@@ -111,7 +111,7 @@ if __name__ == "__main__":
                                NUM_SAMPLES,
                                device)
 
-    train_dataloader = create_data_loaders(train_SD, valid_SD, BATCH_SIZE)
+    train_dataloader = create_data_loaders(train_SD, BATCH_SIZE)
 
     # construct model and assign it to device
     cnn = CNNNetwork().to(device)

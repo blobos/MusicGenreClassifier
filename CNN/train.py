@@ -1,11 +1,12 @@
 import torch
 import torchaudio
 from torch import nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 
 from datasetmelspecprep import DatasetMelSpecPrep
 from cnn import CNNNetwork
 
+from sklearn.metrics import accuracy_score
 
 BATCH_SIZE = 64
 EPOCHS = 10
@@ -18,8 +19,9 @@ SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 
 
-def create_data_loader(train_data, batch_size):
+def create_data_loaders(train_data, validation_data, batch_size):
     train_dataloader = DataLoader(train_data, batch_size=batch_size)
+    validation_dataloader = DataLoader(validation_data, batch_size=batch_size, shuffle=True)
     return train_dataloader
 
 
@@ -67,9 +69,10 @@ if __name__ == "__main__":
                              mel_spectrogram,
                              SAMPLE_RATE,
                              NUM_SAMPLES,
-                             device)
+                             device,
+                             test=False)
     
-    train_dataloader = create_data_loader(usd, BATCH_SIZE)
+    train_dataloader = create_data_loaders(usd, BATCH_SIZE)
 
     # construct model and assign it to device
     cnn = CNNNetwork().to(device)
