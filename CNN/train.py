@@ -19,9 +19,8 @@ SAMPLE_RATE = 22050
 NUM_SAMPLES = 22050
 
 
-def create_data_loaders(train_data, validation_data, batch_size):
+def create_data_loaders(train_data, batch_size):
     train_dataloader = DataLoader(train_data, batch_size=batch_size)
-    validation_dataloader = DataLoader(validation_data, batch_size=batch_size, shuffle=True)
     return train_dataloader
 
 

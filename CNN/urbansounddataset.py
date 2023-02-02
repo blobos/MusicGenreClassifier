@@ -6,7 +6,7 @@ import pandas as pd
 import torchaudio
 
 
-class DatasetMelSpecPrep(Dataset):
+class UrbanSoundDataset(Dataset):
 
     def __init__(self,
                  annotations_file,
@@ -45,14 +45,12 @@ class DatasetMelSpecPrep(Dataset):
 
     def _cut_if_necessary(self, signal):
         if signal.shape[1] > self.num_samples:
-            # print("cut")
             signal = signal[:, :self.num_samples]
         return signal
 
     def _right_pad_if_necessary(self, signal):
         length_signal = signal.shape[1]
         if length_signal < self.num_samples:
-            # print("padded")
             num_missing_samples = self.num_samples - length_signal
             last_dim_padding = (0, num_missing_samples)
             signal = torch.nn.functional.pad(signal, last_dim_padding)
@@ -60,42 +58,30 @@ class DatasetMelSpecPrep(Dataset):
 
     def _resample_if_necessary(self, signal, sr):
         if sr != self.target_sample_rate:
-            # print("resampled")
             resampler = torchaudio.transforms.Resample(sr, self.target_sample_rate)
-            resampler = resampler.to("cuda")
             signal = resampler(signal)
         return signal
 
     def _mix_down_if_necessary(self, signal):
         if signal.shape[0] > 1:
-            # print("Mono-ed")
             signal = torch.mean(signal, dim=0, keepdim=True)
         return signal
 
     def _get_audio_sample_path(self, index):
-        if not self.test:
-            subgenre = self.annotations.iloc[index, 2]
-            filename = self.annotations.iloc[index, 0].split("_")
-            filename = filename[0] + "_" + filename[1] + "_" + filename[2]
-            fold = subgenre + "/" + filename  # folder of audiofile in SD
-            path = os.path.join(self.audio_dir, fold, self.annotations.iloc[index, 0])
-        else:
-            fold = self.annotations.iloc[index, 0][:-17]
-            # print(self.audio_dir)
-            # print(fold)
-            # print(self.annotations.iloc[index, 0])
-            path = os.path.join(self.audio_dir, fold, self.annotations.iloc[index, 0])
-        # print(path)
+        fold = self.annotations.iloc[index, 0][:-17]
+        # print(self.audio_dir)
+        # print(fold)
+        # print(self.annotations.iloc[index, 0])
+        path = os.path.join(self.audio_dir, fold, self.annotations.iloc[index, 0])
         return path
-
 
     def _get_audio_sample_label(self, index):
         return self.annotations.iloc[index, 3]
 
 
 if __name__ == "__main__":
-    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
-    AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
+    ANNOTATIONS_FILE = "/home/student/Music/3/pytorchforaudio/UrbanSound8K/metadata/UrbanSound8K.csv"
+    AUDIO_DIR = "/home/student/Music/3/pytorchforaudio/UrbanSound8K/audio"
     SAMPLE_RATE = 22050
     NUM_SAMPLES = 22050
 
@@ -112,15 +98,13 @@ if __name__ == "__main__":
         n_mels=64
     )
 
-    usd = DatasetMelSpecPrep(ANNOTATIONS_FILE,
-                             AUDIO_DIR,
-                             mel_spectrogram,
-                             SAMPLE_RATE,
-                             NUM_SAMPLES,
-                             device,
-                             test=True)
-
+    usd = UrbanSoundDataset(ANNOTATIONS_FILE,
+                            AUDIO_DIR,
+                            mel_spectrogram,
+                            SAMPLE_RATE,
+                            NUM_SAMPLES,
+                            device)
     print(f"There are {len(usd)} samples in the dataset.")
     signal, label = usd[0]
-    print(usd[0])
-    print(usd)
+
+

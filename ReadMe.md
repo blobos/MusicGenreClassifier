@@ -1,18 +1,19 @@
 Model now in CNN folder and DataPreprocessing.
 
-Currently debugging: predictions (inference.py) 
-weights of model are GPU tensor, input tensor not
- (Tensor input, Tensor weight, Tensor bias, tuple of ints stride, str padding, tuple of ints dilation, int groups)
-     didn't match because some of the arguments have invalid types: (!builtin_function_or_method!, !Parameter!, !Parameter!, !tuple!, !tuple!, !tuple!, int)
-Will find a existing model for transfer learning as debugging consuming too much time.
+Current:
+debug: all predictions punk rock
+retraining with 100 epoch
 
 Done:
-training complete
+training 10 epoch complete
 clean preprocessing script and added conditions for test set
 dataloader added conditions for test set
+Add validation to training, add log to training,
+inference working in other env(maybe code? fix in inference_fix and urbansounddatset)
 
 To do:
-Add validation to training, add log to training, add aggregation to inference
+add aggregation to inference
+transfer learning - copy other network
 
 
 
