@@ -32,7 +32,6 @@ def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
         prediction = model(input)
         loss = loss_fn(prediction, target)
 
-
         # backpropagate error and update weights
         optimiser.zero_grad()
         loss.backward()
@@ -41,28 +40,34 @@ def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
     return loss.item()
 
 
-
-
 def train(model, data_loader, loss_fn, optimiser, device, epochs):
+    best_validation_accuracy = 0
     for i in range(epochs):
         print(f"Epoch {i + 1}")
         train_loss = train_single_epoch(model, data_loader, loss_fn, optimiser, device)
 
-
         # add validation loop
         val_loss, val_acc = validate(model, val_dataloader, loss_fn, device)
-        print(f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}")
+        print(
+            f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}")
+
+        if val_acc > best_validation_accuracy:
+            torch.save(cnn.state_dict(), optimizer.state_dict(), f"/home/student/Music/1/FYP/MusicGenreClassifier/CNN"
+                                                                 f"/checkpoints/best_at_epoch_{i + 1}.pth")
+            best_validation_accuracy = val_acc.copy()
+            print(f"New best")
 
         if (i + 1) % 5 == 0:
-            torch.save(cnn.state_dict(), f"model_{i + 1}.pth")
-            print(f"Model saved at model_{i + 1}.pth")
+            torch.save(cnn.state_dict(), optimizer.state_dict(), f"/home/student/Music/1/FYP/MusicGenreClassifier/CNN"
+                                                                 f"/checkpoints/model_{i + 1}.pth")
+            print(f"Model saved as model_{i + 1}.pth")
         print("---------------------------")
-
 
         with open("training_log.txt", "a") as f:
             f.write(
                 f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}\n")
     print("Finished training")
+
 
 def validate(model, data_loader, loss_fn, device):
     model.eval()  # set model to evaluation mode
@@ -87,6 +92,7 @@ def validate(model, data_loader, loss_fn, device):
     model.train()  # set model back to training mode
 
     return val_loss, val_acc
+
 
 if __name__ == "__main__":
     if torch.cuda.is_available():
@@ -115,19 +121,18 @@ if __name__ == "__main__":
     train_dataloader = DataLoader(train_data, BATCH_SIZE)
     val_dataloader = DataLoader(val_data, BATCH_SIZE, shuffle=True)
 
-
     # construct model and assign it to device
     cnn = CNNNetwork().to(device)
     print(cnn)
 
     # initialise loss function + optimiser
     loss_fn = nn.CrossEntropyLoss()
-    optimiser = torch.optim.Adam(cnn.parameters(),
+    optimizer = torch.optim.Adam(cnn.parameters(),
                                  lr=LEARNING_RATE)
 
     # train model
-    train(cnn, train_dataloader, loss_fn, optimiser, device, EPOCHS)
+    train(cnn, train_dataloader, loss_fn, optimizer, device, EPOCHS)
 
     # save model
-    torch.save(cnn.state_dict(), "CNN.pth")
+    torch.save(cnn.state_dict(), "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/CNN.pth")
     print("Trained feed forward net saved at CNN.pth")
