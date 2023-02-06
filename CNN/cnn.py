@@ -62,8 +62,10 @@ class CNNNetwork(nn.Module):
         x = self.conv4(x)
         x = self.flatten(x)
         logits = self.linear(x)
-        predictions = self.softmax(logits)
+        # predictions = self.softmax(logits)
+        predictions = logits
         return predictions
+
 
 
 if __name__ == "__main__":

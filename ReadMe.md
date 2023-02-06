@@ -1,17 +1,19 @@
 Model now in CNN folder and DataPreprocessing.
 
 Current:  
-debugging: 1. all predictions punk rock (10 epoch)  
-retraining with 100 epoch:
-![img.png](img.png)
+training
 
 
 Done:  
-Add validation to training, add log to training, 5th epoch & best saves   
-training 10 epoch complete  
+fixed training loss not changing (pytorch crossentropyloss already contains softmax)
+Add patience, validation to training, add log to training, 5th epoch & best saves
 clean preprocessing script and added conditions for test set  
-dataloader added conditions for test set
-inference working in other env(maybe code? fix in inference_fix and urbansounddatset)
+debugged training?
+debugging: 1. all predictions indie rock (66 epoch)
+![img.png](img.png)
+2. bug: can't use Cuda for inference. why though? 
+
+
 
 To do:  
 add aggregation to inference  

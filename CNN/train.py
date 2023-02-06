@@ -69,7 +69,8 @@ if __name__ == "__main__":
                              SAMPLE_RATE,
                              NUM_SAMPLES,
                              device,
-                             test=False)
+                             labelled=True)
+
     
     train_dataloader = create_data_loaders(usd, BATCH_SIZE)
 

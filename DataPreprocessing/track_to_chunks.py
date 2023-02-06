@@ -9,12 +9,12 @@ overlap = 15 * 1000  # 15 seconds
 bitrate = "128k"  # 128kbps
 
 
-def _split_audio(file, output_directory, test):
+def _split_audio(file, output_directory, labelled):
     # print(file)
     try:
         path_split = file.split("\\")
         file_name = path_split[0].split("/")[-1]
-        if not test:  # if test track, subgenre from the filename is not used.
+        if labelled:  # if test track, subgenre from the filename is not used.
             file_name = file_name.split("_")
             subgenre = file_name[1] + "_" + file_name[2]
             subgenre_track_counter = file_name[0]
@@ -39,7 +39,7 @@ def _split_audio(file, output_directory, test):
             end = start + chunk_length
             chunk = audio_track[start:end]
 
-            if not test:
+            if labelled:
                 sort_name = subgenre + "_" + subgenre_track_counter
                 # chunks/black_metal/black_metal_001/
                 # print("directory: ", chunk_directory)
@@ -54,7 +54,7 @@ def _split_audio(file, output_directory, test):
             # chunks/black_metal/black_metal_001/
             # print("directory: ", chunk_directory)
             output_filename = sort_name + "_chunk_" + str("%02d" % (chunk_counter,)) + 'of' + str(
-                "%02d" % (total_subgenre_track_chunks,)) + '.mp3'
+                "%02d" % (total_subgenre_track_chunks,)) + '.wav'
             # print("filename: ", output_filename)
             # black_metal_0001_chunk_01_25.mp3
 
@@ -76,7 +76,7 @@ def _split_audio(file, output_directory, test):
         print(e)
 
 
-def audio_split_pooling(input_directory, output_directory, test):
+def audio_split_pooling(input_directory, output_directory, labelled):
     # Run split_audio with pooling for files in input_directory
 
     audio_files = []
@@ -96,6 +96,6 @@ def audio_split_pooling(input_directory, output_directory, test):
     # for file in audio_files:
     #     split_audio(file,output_directory)
     with Pool(processes=16) as pool:
-        pool.starmap(_split_audio, [(file, output_directory, test) for file in audio_files])
+        pool.starmap(_split_audio, [(file, output_directory, labelled) for file in audio_files])
 
 

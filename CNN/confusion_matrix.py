@@ -1,16 +1,22 @@
 import torch
 import torchaudio
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 
 from cnn import CNNNetwork
 from datasetmelspecprep import DatasetMelSpecPrep
 from train import SAMPLE_RATE, NUM_SAMPLES
 
+
 class_mapping = [
     "alternative_rock",
-    "black_metal",
-    "death_metal",
+    "black_Metal",
+    "death_Metal",
     "dreampop_rock",
-    "heavy_metal",
+    "heavy_Metal",
     "house_electronic",
     "indie_rock",
     "post_rock",
@@ -18,31 +24,29 @@ class_mapping = [
     "punk_rock",
     "synthwave_electronic",
     "techno_electronic",
-    "thrash_metal",
+    "thrash_Metal",
     "trance_electronic"
 ]
 
-
-def predict(model, input_tensor, target, class_mapping):
+def predict(model, input, class_mapping):
     model.eval()
     with torch.no_grad():
-        predictions = model(input)
+        predictions = model(input[0].unsqueeze_(0))
         # Tensor (1, 10) -> [ [0.1, 0.01, ..., 0.6] ]
         predicted_index = predictions[0].argmax(0)
         predicted = class_mapping[predicted_index]
-        # expected = class_mapping[target]
-    return predicted, expected
-
+        path = input[1]
+    return predicted, path
 
 if __name__ == "__main__":
-    # load back the model
+    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
+    AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
 
+    # load back the model
     cnn = CNNNetwork()
     state_dict = torch.load("/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/66s epoch "
                             "resampler/model_55.pth")
     cnn.load_state_dict(state_dict)
-
-
 
     # load urban sound dataset dataset
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
@@ -52,27 +56,25 @@ if __name__ == "__main__":
         n_mels=64
     )
 
-    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
-    AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
-
-    DMSP = DatasetMelSpecPrep(ANNOTATIONS_FILE,
+    dmsp = DatasetMelSpecPrep(ANNOTATIONS_FILE,
                               AUDIO_DIR,
                               mel_spectrogram,
                               SAMPLE_RATE,
                               NUM_SAMPLES,
                               "cpu",
-                              labelled=True)
+                              True)
 
-    # get a sample from the urban sound dataset for inference
-    print("usd[0]", DMSP[0])
-    print(len(DMSP))
-    print(DMSP[0][0])
-    input_tensor, target = DMSP[0][0], DMSP[0][1]  # [batch size, num_channels, fr, time]
-    input_tensor.unsqueeze_(0)
-    # input_tensor = input_tensor.to("cuda")
+    num_classes = len(class_mapping)
+    true_labels = []
+    predicted_labels = []
+    for i in range(len(dmsp)):
+        input = dmsp[i]
+        predicted, path = predict(cnn, input, class_mapping)
+        true_labels.append(dmsp._get_audio_sample_label(path))
+        predicted_labels.append(predicted)
 
-    # make an inference
-    predicted, expected = predict(cnn, input_tensor, target,
-                                  class_mapping)
-    print(f"Predicted: '{predicted}', expected: '{expected}'")
-    # print(f"Predicted: '{predicted}'")
+    cm = confusion_matrix(true_labels, predicted_labels, labels=class_mapping)
+    df_cm = pd.DataFrame(cm, index=class_mapping, columns=class_mapping)
+
+    sns.heatmap(df_cm, annot=True, cmap="Blues")
+    plt.show()
