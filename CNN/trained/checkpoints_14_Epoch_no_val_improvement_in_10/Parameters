@@ -1,0 +1,85 @@
+    SAMPLE_RATE = 22050
+    NUM_SAMPLES = 22050
+
+    # instantiating our dataset object and create data loader
+    mel_spectrogram = torchaudio.transforms.MelSpectrogram(
+        sample_rate=SAMPLE_RATE,
+        n_fft=1024,
+        hop_length=512,
+        n_mels=64
+    )
+
+CNNNetwork(
+  (conv1): Sequential(
+    (0): Conv2d(1, 16, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2))
+    (1): ReLU()
+    (2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  )
+  (conv2): Sequential(
+    (0): Conv2d(16, 32, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2))
+    (1): ReLU()
+    (2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  )
+  (conv3): Sequential(
+    (0): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2))
+    (1): ReLU()
+    (2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  )
+  (conv4): Sequential(
+    (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2))
+    (1): ReLU()
+    (2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  )
+  (flatten): Flatten(start_dim=1, end_dim=-1)
+  (linear): Linear(in_features=2560, out_features=14, bias=True)
+  (softmax): Softmax(dim=1)
+)
+Epoch 1
+/home/student/Music/1/venv/lib/python3.8/site-packages/torch/nn/functional.py:718: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /pytorch/c10/core/TensorImpl.h:1156.)
+  return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+Epoch 1, Training Loss: 1.7686291933059692, Validation Loss: 1.6723, Validation Accuracy: 0.4128
+Lowest Validation Loss
+---------------------------
+Epoch 2
+Epoch 2, Training Loss: 1.306054949760437, Validation Loss: 1.5102, Validation Accuracy: 0.4769
+Lowest Validation Loss
+---------------------------
+Epoch 3
+Epoch 3, Training Loss: 0.9894452691078186, Validation Loss: 1.4618, Validation Accuracy: 0.5133
+Lowest Validation Loss
+---------------------------
+Epoch 4
+Epoch 4, Training Loss: 0.8584608435630798, Validation Loss: 1.3991, Validation Accuracy: 0.5202
+Lowest Validation Loss
+---------------------------
+Epoch 5
+Epoch 5, Training Loss: 0.7818619608879089, Validation Loss: 1.4861, Validation Accuracy: 0.5220
+---------------------------
+Epoch 6
+Epoch 6, Training Loss: 0.7361637353897095, Validation Loss: 1.4779, Validation Accuracy: 0.5248
+---------------------------
+Epoch 7
+Epoch 7, Training Loss: 0.6545846462249756, Validation Loss: 1.4293, Validation Accuracy: 0.5365
+---------------------------
+Epoch 8
+Epoch 8, Training Loss: 0.48053213953971863, Validation Loss: 1.4148, Validation Accuracy: 0.5338
+---------------------------
+Epoch 9
+Epoch 9, Training Loss: 0.40283241868019104, Validation Loss: 1.4686, Validation Accuracy: 0.5444
+---------------------------
+Epoch 10
+Epoch 10, Training Loss: 0.44617852568626404, Validation Loss: 1.5805, Validation Accuracy: 0.5269
+---------------------------
+Epoch 11
+Epoch 11, Training Loss: 0.5447098612785339, Validation Loss: 1.5170, Validation Accuracy: 0.5414
+---------------------------
+Epoch 12
+Epoch 12, Training Loss: 0.3862285017967224, Validation Loss: 1.5388, Validation Accuracy: 0.5478
+---------------------------
+Epoch 13
+Epoch 13, Training Loss: 0.446377158164978, Validation Loss: 1.5738, Validation Accuracy: 0.5600
+---------------------------
+Epoch 14
+Epoch 14, Training Loss: 0.335166871547699, Validation Loss: 1.6983, Validation Accuracy: 0.5585
+Stopping training after 10 epochs without improvement in validation loss
+Finished training

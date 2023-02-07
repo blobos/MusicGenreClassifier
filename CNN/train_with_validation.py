@@ -81,7 +81,7 @@ def train(model, data_loader, loss_fn, optimiser, device, epochs, patience):
         # print(f"Model saved as model_{i + 1}.pth")
         print("---------------------------")
 
-        with open("training_log.txt", "a") as f:
+        with open("trained/checkpoints_14_Epoch_no_val_improvement_in_10/training_log.txt", "a") as f:
             if val_acc > highest_validation_accuracy:
                 f.write("Highest Validation Accuracy ")
             if val_loss < lowest_validation_loss:

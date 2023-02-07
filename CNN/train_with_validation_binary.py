@@ -10,12 +10,6 @@ from sklearn.metrics import accuracy_score
 
 
 
-CHECKPOINTS_DIR = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/"
-
-
-
-SAMPLE_RATE = 22050
-NUM_SAMPLES = 22050
 
 
 # def create_data_loaders(train_data, batch_size):
@@ -39,7 +33,7 @@ def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
     return loss.item()
 
 
-def train(model, data_loader, loss_fn, optimiser, device, epochs, patience):
+def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience):
     highest_validation_accuracy = 0
     lowest_training_loss =100
     lowest_validation_loss = 100
@@ -47,7 +41,7 @@ def train(model, data_loader, loss_fn, optimiser, device, epochs, patience):
     train_wait = 0
     for i in range(epochs):
         print(f"Epoch {i + 1}")
-        train_loss = train_single_epoch(model, data_loader, loss_fn, optimiser, device)
+        train_loss = train_single_epoch(model, train_dataloader, loss_fn, optimiser, device)
 
         # add validation loop
         val_loss, val_acc = validate(model, val_dataloader, loss_fn, device)
@@ -63,6 +57,10 @@ def train(model, data_loader, loss_fn, optimiser, device, epochs, patience):
         else:
             train_wait +=1
             if train_wait == patience:
+                f.write(
+                    f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
+                    f"Stopping training after {patience} epochs without improvement in training loss"
+                )
                 print(f"Stopping training after {patience} epochs without improvement in training loss")
                 break
 
@@ -74,6 +72,10 @@ def train(model, data_loader, loss_fn, optimiser, device, epochs, patience):
         else:
             val_wait += 1
             if val_wait == patience:
+                f.write(
+                    f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
+                    f"Stopping training after {patience} epochs without improvement in validation loss"
+                )
                 print(f"Stopping training after {patience} epochs without improvement in validation loss")
                 break
 
@@ -81,13 +83,14 @@ def train(model, data_loader, loss_fn, optimiser, device, epochs, patience):
         # print(f"Model saved as model_{i + 1}.pth")
         print("---------------------------")
 
-        with open("training_log.txt", "a") as f:
-            if val_acc > highest_validation_accuracy:
-                f.write("Highest Validation Accuracy ")
-            if val_loss < lowest_validation_loss:
-                f.write("Lowest Validation Loss")
+        with open("trained/checkpoints_14_Epoch_no_val_improvement_in_10/training_log.txt", "a") as f:
             f.write(
-                f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}\n")
+                f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}")
+            if val_acc > highest_validation_accuracy:
+                f.write(", Highest Validation Accuracy ")
+            if val_loss < lowest_validation_loss:
+                f.write(", Lowest Validation Loss")
+            f.write("\n")
     print("Finished training")
 
 
@@ -117,6 +120,7 @@ def validate(model, data_loader, loss_fn, device):
 
 
 if __name__ == "__main__":
+    CHECKPOINTS_DIR = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/"
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations_binary.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
     # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
@@ -127,6 +131,9 @@ if __name__ == "__main__":
     else:
         device = "cpu"
         print(f"Using {device}")
+
+    SAMPLE_RATE = 22050
+    NUM_SAMPLES = 22050
 
     # instantiating our dataset object and create data loader
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
@@ -162,4 +169,4 @@ if __name__ == "__main__":
                                  lr=LEARNING_RATE)
 
     # train model
-    train(cnn, train_dataloader, loss_fn, optimizer, device, EPOCHS, patience=10)
+    train(cnn, train_dataloader, loss_fn, optimizer, device, EPOCHS, patience=50)

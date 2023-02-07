@@ -10,7 +10,6 @@ from cnn import CNNNetwork
 from datasetmelspecprep import DatasetMelSpecPrep
 from train import SAMPLE_RATE, NUM_SAMPLES
 
-
 class_mapping = [
     "alternative_rock",
     "black_Metal",
@@ -28,6 +27,7 @@ class_mapping = [
     "trance_electronic"
 ]
 
+
 def predict(model, input, class_mapping):
     model.eval()
     with torch.no_grad():
@@ -35,17 +35,23 @@ def predict(model, input, class_mapping):
         # Tensor (1, 10) -> [ [0.1, 0.01, ..., 0.6] ]
         predicted_index = predictions[0].argmax(0)
         predicted = class_mapping[predicted_index]
-        path = input[1]
-    return predicted, path
+        expected = class_mapping[input[1]]
+    return predicted, expected
+
 
 if __name__ == "__main__":
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
+    model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/checkpoints_14_Epoch_no_val_improvement_in_10/lowest_val_Loss_.pth"
+
+    title = model.split("/")[-1]
+    print(type(title))
+    # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
+    # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
 
     # load back the model
     cnn = CNNNetwork()
-    state_dict = torch.load("/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/66s epoch "
-                            "resampler/model_55.pth")
+    state_dict = torch.load(model)
     cnn.load_state_dict(state_dict)
 
     # load urban sound dataset dataset
@@ -67,14 +73,31 @@ if __name__ == "__main__":
     num_classes = len(class_mapping)
     true_labels = []
     predicted_labels = []
+
+    interval = 0.05 * len(dmsp)
     for i in range(len(dmsp)):
         input = dmsp[i]
-        predicted, path = predict(cnn, input, class_mapping)
-        true_labels.append(dmsp._get_audio_sample_label(path))
+        predicted, expected = predict(cnn, input, class_mapping)
+        # print(predicted, expected)
+        true_labels.append(expected)
         predicted_labels.append(predicted)
+        if i % interval == 0:
+            percent_complete = (i / len(dmsp)) * 100
+            print(f"{percent_complete:.2f}% complete")
+
+    # print(predicted_labels)
+    # print(len(predicted_labels))
+    # print(true_labels)
+    # print(len(true_labels))
+    #
+    # print(class_mapping)
+    # print(len(class_mapping))
 
     cm = confusion_matrix(true_labels, predicted_labels, labels=class_mapping)
+    print(cm)
     df_cm = pd.DataFrame(cm, index=class_mapping, columns=class_mapping)
 
     sns.heatmap(df_cm, annot=True, cmap="Blues")
+
+    plt.title(title, y=1.05)
     plt.show()

@@ -1,9 +1,11 @@
 import torch
 import torchaudio
+import csv
 
 from cnn import CNNNetwork
 from datasetmelspecprep import DatasetMelSpecPrep
 from train import SAMPLE_RATE, NUM_SAMPLES
+
 
 
 class_mapping = [
@@ -25,28 +27,28 @@ class_mapping = [
 
 
 
-def predict(model, input, class_mapping):
+def predict(model, input):
     model.eval()
     with torch.no_grad():
         predictions = model(input[0].unsqueeze_(0))
         # Tensor (1, 10) -> [ [0.1, 0.01, ..., 0.6] ]
-        predicted_index = predictions[0].argmax(0)
+
         print(predictions[0])
-        predicted = class_mapping[predicted_index]
-        expected = class_mapping[input[1]]
+
+
         path = input[1]
-    return predicted, expected
+    return predictions[0]
 
 
 if __name__ == "__main__":
 
-    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
-    AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
+    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
+    AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks/"
 
     # load back the model
     cnn = CNNNetwork()
-    state_dict = torch.load("/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained"
-                            "/checkpoints_14_Epoch_no_val_improvement_in_10/lowest_val_Loss_.pth")
+    state_dict = torch.load("/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/66s epoch "
+                            "resampler/model_55.pth")
     cnn.load_state_dict(state_dict)
 
     # load urban sound dataset dataset
@@ -67,12 +69,24 @@ if __name__ == "__main__":
 
 
     # get a sample from the urban sound dataset for inference
-    input = dmsp[1] # [batch size, num_channels, fr, time]
+    input = dmsp[0] # [batch size, num_channels, fr, time]
     # print(input)
     # print("len: " + str(len(dmsp[0])))
     # print(dmsp[0])
 
 
     # make an inference
-    predicted,  path = predict(cnn, input, class_mapping)
-    print(f"Predicted: '{predicted}', Path '{path}'")
+    predicted = predict(cnn, input)
+
+    with open("/home/student/Music/1/FYP/data/mini_train_annotations.csv", "r") as csvfile:
+        reader = csv.reader(csvfile)
+        prediction = []
+        i = 0
+        for row in reader:
+            input = dmsp[i]
+            predicted = predict(cnn, input)
+            prediction += predicted
+            i += 1
+        predicted_index = prediction.argmax(0)
+        predicted = class_mapping[predicted_index]
+        expected = class_mapping[input[1]]
