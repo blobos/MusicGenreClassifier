@@ -67,7 +67,7 @@ def train(model, data_loader, loss_fn, optimiser, device, epochs, patience):
                 break
 
         if val_loss < lowest_validation_loss:
-            torch.save(cnn.state_dict(), CHECKPOINTS_DIR + "lowest_val_Loss_.pth")
+            torch.save(cnn.state_dict(), CHECKPOINTS_DIR + "lowest_val_loss.pth")
             lowest_validation_loss = val_loss
             print(f"Lowest Validation Loss")
             val_wait = 0
@@ -81,7 +81,7 @@ def train(model, data_loader, loss_fn, optimiser, device, epochs, patience):
         # print(f"Model saved as model_{i + 1}.pth")
         print("---------------------------")
 
-        with open("trained/checkpoints_14_Epoch_no_val_improvement_in_10/training_log.txt", "a") as f:
+        with open("trained/54/training_log.txt", "a") as f:
             if val_acc > highest_validation_accuracy:
                 f.write("Highest Validation Accuracy ")
             if val_loss < lowest_validation_loss:

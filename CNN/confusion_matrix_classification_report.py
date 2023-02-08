@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, classification_report
 
 from cnn import CNNNetwork
 from datasetmelspecprep import DatasetMelSpecPrep
@@ -12,10 +12,10 @@ from train import SAMPLE_RATE, NUM_SAMPLES
 
 class_mapping = [
     "alternative_rock",
-    "black_Metal",
-    "death_Metal",
+    "black_metal",
+    "death_metal",
     "dreampop_rock",
-    "heavy_Metal",
+    "heavy_metal",
     "house_electronic",
     "indie_rock",
     "post_rock",
@@ -23,7 +23,7 @@ class_mapping = [
     "punk_rock",
     "synthwave_electronic",
     "techno_electronic",
-    "thrash_Metal",
+    "thrash_metal",
     "trance_electronic"
 ]
 
@@ -42,11 +42,9 @@ def predict(model, input, class_mapping):
 if __name__ == "__main__":
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
-    model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/checkpoints_14_Epoch_no_val_improvement_in_10/lowest_val_Loss_.pth"
+    model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/54/lowest_val_loss.pth"
 
-    title = model.split("/")[-1]
-    print(type(title))
-    # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
+     # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
     # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
 
     # load back the model
@@ -74,7 +72,7 @@ if __name__ == "__main__":
     true_labels = []
     predicted_labels = []
 
-    interval = 0.05 * len(dmsp)
+    interval = 0.1 * len(dmsp)
     for i in range(len(dmsp)):
         input = dmsp[i]
         predicted, expected = predict(cnn, input, class_mapping)
@@ -85,19 +83,29 @@ if __name__ == "__main__":
             percent_complete = (i / len(dmsp)) * 100
             print(f"{percent_complete:.2f}% complete")
 
-    # print(predicted_labels)
-    # print(len(predicted_labels))
-    # print(true_labels)
-    # print(len(true_labels))
-    #
-    # print(class_mapping)
-    # print(len(class_mapping))
 
     cm = confusion_matrix(true_labels, predicted_labels, labels=class_mapping)
     print(cm)
+    # cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    # cm = np.round(cm * 100, 2)
     df_cm = pd.DataFrame(cm, index=class_mapping, columns=class_mapping)
 
-    sns.heatmap(df_cm, annot=True, cmap="Blues")
+    plt.figure(figsize=(1080 / 96, 810 / 96), dpi=96)
+    sns.heatmap(df_cm, annot=True, cmap="Blues", fmt='.2f')
 
+    plt.subplots_adjust(left=0.17, bottom=0.19, right=1, top=0.92)
+    plt.xlabel("Predicted")
+    plt.ylabel("Truth")
+
+    title = model.split("/")[-1]
     plt.title(title, y=1.05)
-    plt.show()
+    plt.savefig(model + "_confusion_matrix.png")
+    # plt.show()
+    plt.close()
+
+    classification_report = classification_report(true_labels, predicted_labels, labels=class_mapping)
+    with open(model + "_classification_report.txt", "a") as f:
+        f.write(classification_report)
+
+    print(classification_report)
+

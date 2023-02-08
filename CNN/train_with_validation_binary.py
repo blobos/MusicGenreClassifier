@@ -48,34 +48,36 @@ def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience)
         print(
             f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}")
 
-        # if val_acc > highest_validation_accuracy:
-        #     torch.save(cnn.state_dict(), CHECKPOINTS_DIR + "highest_val_acc.pth")
-        #     highest_validation_accuracy = val_acc
-        #     print(f"Highest Validation Accuracy")
+        if val_acc > highest_validation_accuracy:
+            torch.save(cnn.state_dict(), CHECKPOINTS_DIR + "highest_val_acc.pth")
+            highest_validation_accuracy = val_acc
+            print(f"Highest Validation Accuracy")
         if train_loss < lowest_training_loss:
             train_wait = 0
         else:
             train_wait +=1
             if train_wait == patience:
-                f.write(
-                    f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
-                    f"Stopping training after {patience} epochs without improvement in training loss"
-                )
+                with open(CHECKPOINTS_DIR + "training_log.txt", "a") as f:
+                    f.write(
+                        f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
+                        f"Stopping training after {patience} epochs without improvement in training loss"
+                    )
                 print(f"Stopping training after {patience} epochs without improvement in training loss")
                 break
 
         if val_loss < lowest_validation_loss:
-            torch.save(cnn.state_dict(), CHECKPOINTS_DIR + "lowest_val_Loss_.pth")
+            torch.save(cnn.state_dict(), CHECKPOINTS_DIR + "lowest_val_loss.pth")
             lowest_validation_loss = val_loss
             print(f"Lowest Validation Loss")
             val_wait = 0
         else:
             val_wait += 1
             if val_wait == patience:
-                f.write(
-                    f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
-                    f"Stopping training after {patience} epochs without improvement in validation loss"
-                )
+                with open(CHECKPOINTS_DIR + "training_log.txt", "a") as f:
+                    f.write(
+                        f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
+                        f"Stopping training after {patience} epochs without improvement in validation loss"
+                    )
                 print(f"Stopping training after {patience} epochs without improvement in validation loss")
                 break
 
@@ -83,7 +85,7 @@ def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience)
         # print(f"Model saved as model_{i + 1}.pth")
         print("---------------------------")
 
-        with open("trained/checkpoints_14_Epoch_no_val_improvement_in_10/training_log.txt", "a") as f:
+        with open(CHECKPOINTS_DIR + "training_log.txt", "a") as f:
             f.write(
                 f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}")
             if val_acc > highest_validation_accuracy:
@@ -121,7 +123,8 @@ def validate(model, data_loader, loss_fn, device):
 
 if __name__ == "__main__":
     CHECKPOINTS_DIR = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/"
-    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations_binary.csv"
+
+    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
     # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
     # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
@@ -132,15 +135,18 @@ if __name__ == "__main__":
         device = "cpu"
         print(f"Using {device}")
 
-    SAMPLE_RATE = 22050
-    NUM_SAMPLES = 22050
+    SAMPLE_RATE = 44100
+    NUM_SAMPLES = 44100
+    N_FFT = 2048
+    HOP_LENGTH = 1024
+    N_MELS = 64
 
     # instantiating our dataset object and create data loader
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
         sample_rate=SAMPLE_RATE,
-        n_fft=1024,
-        hop_length=512,
-        n_mels=64
+        n_fft=N_FFT,
+        hop_length=HOP_LENGTH,
+        n_mels=N_MELS
     )
 
     dmsp = DatasetMelSpecPrep(ANNOTATIONS_FILE,
@@ -162,6 +168,17 @@ if __name__ == "__main__":
     # construct model and assign it to device
     cnn = CNNNetwork().to(device)
     print(cnn)
+
+    with open(CHECKPOINTS_DIR + "parameters.txt", 'a') as f:
+        f.write("Parameters\n"
+                f"Batch size: f{BATCH_SIZE}\n"
+                f"Epochs: f{EPOCHS}\n"
+                f"Learning rate: f{LEARNING_RATE}\n"
+                "Mel Spectrogram\n"
+                f"Sample rate: f{SAMPLE_RATE}\n"
+                f"n_fft(frequency resolution): f{N_FFT}\n"
+                f"hop_length: f{HOP_LENGTH}\n"
+                f"Mel bins(n_mels): f{N_MELS}\n")
 
     # initialise loss function + optimiser
     loss_fn = nn.CrossEntropyLoss()

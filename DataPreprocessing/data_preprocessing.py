@@ -10,9 +10,9 @@ PREDICT_INPUT_DIRECTORY = "/home/student/Music/1/FYP/data/test/testing/learned_s
 PREDICT_OUTPUT_DIRECTORY = "/home/student/Music/1/FYP/data/test/chunks/"
 PREDICT_CSV_DIRECTORY = "/home/student/Music/1/FYP/data/test_annotations.csv"
 
-TRAIN_INPUT_DIRECTORY = "/home/student/Music/1/FYP/data/miniDataset/tracks/"  # "/FYP/data/train/tracks/"
-TRAIN_OUTPUT_DIRECTORY = "/home/student/Music/1/FYP/data/miniDataset/chunks/"  # "data/train/chunks/"
-TRAIN_CSV_DIRECTORY = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
+# TRAIN_INPUT_DIRECTORY = "/home/student/Music/1/FYP/data/miniDataset/tracks/"  # "/FYP/data/train/tracks/"
+# TRAIN_OUTPUT_DIRECTORY = "/home/student/Music/1/FYP/data/miniDataset/chunks/"  # "data/train/chunks/"
+# TRAIN_CSV_DIRECTORY = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
 
 # split chunks
 # audio_split_pooling(TRAIN_INPUT_DIRECTORY, TRAIN_OUTPUT_DIRECTORY, labelled=False)

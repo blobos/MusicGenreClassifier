@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-
+path = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/54/training_log.txt"
 # Read the data from the text file
-with open("/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/checkpoints_14_Epoch_no_val_improvement_in_10/training_log_14_epoch", "r") as f:
+with open(path, "r") as f:
     data = f.read()
 
 # Split the data into lines

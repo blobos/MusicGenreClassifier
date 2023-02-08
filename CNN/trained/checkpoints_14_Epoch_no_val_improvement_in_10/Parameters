@@ -1,4 +1,4 @@
-    SAMPLE_RATE = 22050
+   SAMPLE_RATE = 22050
     NUM_SAMPLES = 22050
 
     # instantiating our dataset object and create data loader
