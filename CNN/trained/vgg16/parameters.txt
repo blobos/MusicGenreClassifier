@@ -1,0 +1,10 @@
+Parameters
+VGG16
+Batch size: 128
+Epochs: 100
+Learning rate: 0.001
+Mel Spectrogram
+Sample rate: 44100
+n_fft(frequency resolution): 2048
+hop_length: 1024
+Mel bins(n_mels): 128

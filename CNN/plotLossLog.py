@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-path = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/54/training_log.txt"
+model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/training_log.txt"
 # Read the data from the text file
-with open(path, "r") as f:
+with open(model, "r") as f:
     data = f.read()
 
 # Split the data into lines
@@ -52,4 +52,5 @@ ax2.annotate(f"Max validation accuracy: {validation_accuracy[max_index_acc]:.2f}
 
 # Display the picture
 plt.tight_layout()
+plt.savefig(model + "_Loss.png")
 plt.show()

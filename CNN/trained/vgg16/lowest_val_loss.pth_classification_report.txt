@@ -1,0 +1,20 @@
+                      precision    recall  f1-score   support
+
+    alternative_rock       0.08      0.07      0.07       530
+         black_metal       0.42      0.47      0.44       244
+         death_metal       0.63      0.57      0.60       294
+       dreampop_rock       0.25      0.23      0.24       728
+         heavy_metal       0.35      0.45      0.39       418
+    house_electronic       0.50      0.41      0.45       834
+          indie_rock       0.10      0.24      0.15       240
+           post_rock       0.15      0.45      0.23       308
+    progressive_rock       0.12      0.16      0.14       136
+           punk_rock       0.28      0.07      0.12       418
+synthwave_electronic       0.42      0.32      0.36       338
+   techno_electronic       0.65      0.07      0.12       554
+        thrash_metal       0.41      0.47      0.44       174
+   trance_electronic       0.33      0.45      0.38       280
+
+            accuracy                           0.29      5496
+           macro avg       0.34      0.32      0.29      5496
+        weighted avg       0.36      0.29      0.29      5496

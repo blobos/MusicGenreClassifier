@@ -4,7 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader, random_split
 
 from SubgenreDataset import SubgenreDataset
-from CNN import CNNNetwork
+from CNN import CNNNetwork1
 
 from sklearn.metrics import accuracy_score
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     train_dataloader = create_data_loaders(train_SD, BATCH_SIZE)
 
     # construct model and assign it to device
-    cnn = CNNNetwork().to(device)
+    cnn = CNNNetwork1().to(device)
     print(cnn)
 
     # initialise loss funtion + optimiser

@@ -3,7 +3,7 @@ import torchaudio
 from torch import nn
 from torch.utils.data import DataLoader
 from DataPreprocessing.Preprocess import Preprocess
-from CNN import CNNNetwork
+from CNN import CNNNetwork1
 
 BATCH_SIZE = 1
 EPOCHS = 10
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     train_data_loader = create_data_loader(chunk, batch_size=BATCH_SIZE)
     # validation_data_loader
 
-    cnn = CNNNetwork().to(device)
+    cnn = CNNNetwork1().to(device)
     print(cnn)
 
     # instantiate loss function + optimiser

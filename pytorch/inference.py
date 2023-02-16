@@ -1,6 +1,6 @@
 import torch
 import torchaudio
-from CNN import CNNNetwork
+from CNN import CNNNetwork1
 from UrbanSoundDataset import UrbanSoundDataset
 from train-SD import AUDIO_DIR, SAMPLE_RATE, NUM_SAMPLES
 
@@ -49,7 +49,7 @@ def predict(model, input, class_mapping):
 
 if __name__ == "__main__":
     # load model back
-    cnn = CNNNetwork()
+    cnn = CNNNetwork1()
     state_dict = torch.load("latest.pth", map_location=torch.device('cpu'))
     cnn.load_state_dict(state_dict)
 

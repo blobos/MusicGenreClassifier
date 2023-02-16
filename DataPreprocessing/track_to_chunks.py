@@ -9,7 +9,7 @@ overlap = 15 * 1000  # 15 seconds
 bitrate = "128k"  # 128kbps
 
 
-def _split_audio(file, output_directory, labelled):
+def split_audio(file, output_directory, labelled):
     # print(file)
     try:
         path_split = file.split("\\")
@@ -51,6 +51,7 @@ def _split_audio(file, output_directory, labelled):
                 sort_name = file_name.replace(" ", "_")
                 chunk_directory = output_directory + "/" + sort_name + "/"
 
+
             # chunks/black_metal/black_metal_001/
             # print("directory: ", chunk_directory)
             output_filename = sort_name + "_chunk_" + str("%02d" % (chunk_counter,)) + 'of' + str(
@@ -59,17 +60,18 @@ def _split_audio(file, output_directory, labelled):
             # black_metal_0001_chunk_01_25.mp3
 
 
-
-
             if not os.path.exists(chunk_directory):
-                # print("no exist directory")
+                print("no exist directory")
                 os.makedirs(chunk_directory)
             if not os.path.exists(chunk_directory + output_filename):
-                # print(file)
+                print(file)
                 chunk.export(chunk_directory + output_filename, format="wav", bitrate=bitrate)
                 # print("Processing chunk " + output_filename + ". Start = " + str(start) + " end = " + str(end))
                 chunk_counter = chunk_counter + 1
                 start += chunk_length - overlap
+
+        if not labelled: #for aggregate_prediction.load_file
+            return chunk_directory
 
     except Exception as e:
         print("Error processing file: ", file)
@@ -95,7 +97,7 @@ def audio_split_pooling(input_directory, output_directory, labelled):
     # print(audio_files)
     # for file in audio_files:
     #     split_audio(file,output_directory)
-    with Pool(processes=16) as pool:
-        pool.starmap(_split_audio, [(file, output_directory, labelled) for file in audio_files])
+    with Pool(processes=128) as pool:
+        pool.starmap(split_audio, [(file, output_directory, labelled) for file in audio_files])
 
 

@@ -21,6 +21,7 @@ def chunks_to_CSV(chunk_directory, csv_path, labelled):
             # Recursively search through all subdirectories and add each file to the list `data`
             for subdir, dirs, files in os.walk(chunk_directory):
                 for file in files:
+                    # if file
                     chunk_file_name = file
                     filename = file.split("_")
                     subgenre = filename[0] + "_" + filename[1]
@@ -59,6 +60,6 @@ def chunks_to_CSV(chunk_directory, csv_path, labelled):
 
 
 if __name__ == "__main__":
-    chunk_directory = "/home/student/Music/1/FYP/data/miniDataset/chunks"
-    csv_path = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
+    chunk_directory = "/home/student/Music/1/FYP/data/train/chunks"
+    csv_path = "/home/student/Music/1/FYP/data/train_annotations.csv"
     chunks_to_CSV(chunk_directory, csv_path, True)

@@ -65,9 +65,9 @@ class CNNNetwork(nn.Module):  # inherit for nn.Module (pytorch NN)
         x = self.conv2(x)
         x = self.conv3(x)
         x = self.conv4(x)
-        # print(x.shape)
+        print(x.shape)
         x = self.flatten(x)
-        # print(x.shape) #torch.Size([128, 20])
+        print(x.shape) #torch.Size([128, 20])
         #NOT FLATTENED
         # mat1 and mat2 shapes cannot be multiplied (128x20 and 2560x10)
         # where does 2560 come from? 128 * 20
@@ -79,5 +79,5 @@ class CNNNetwork(nn.Module):  # inherit for nn.Module (pytorch NN)
 
 if __name__ == "__main__":
     cnn = CNNNetwork()
-    summary(cnn, (1, 64, 44))  # mel spectrogram dim (ch, freq axis(mel bands), time axis)
+    summary(cnn.cuda(), (1, 64, 44))  # mel spectrogram dim (ch, freq axis(mel bands), time axis)
     # summary(cnn.cuda(), (1, 64, 44))

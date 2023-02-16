@@ -6,9 +6,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report
 
-from cnn import CNNNetwork
+# from cnn import CNNNetwork
+from cnn_vgg16 import CNNNetwork
 from datasetmelspecprep import DatasetMelSpecPrep
-from train import SAMPLE_RATE, NUM_SAMPLES
+# from train import SAMPLE_RATE, NUM_SAMPLES
 
 class_mapping = [
     "alternative_rock",
@@ -42,7 +43,7 @@ def predict(model, input, class_mapping):
 if __name__ == "__main__":
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
-    model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/54/lowest_val_loss.pth"
+    model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/lowest_val_loss.pth"
 
      # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
     # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
@@ -54,17 +55,17 @@ if __name__ == "__main__":
 
     # load urban sound dataset dataset
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
-        sample_rate=SAMPLE_RATE,
-        n_fft=1024,
-        hop_length=512,
-        n_mels=64
+        sample_rate=44100,
+        n_fft=2048,
+        hop_length=1024,
+        n_mels=128
     )
 
     dmsp = DatasetMelSpecPrep(ANNOTATIONS_FILE,
                               AUDIO_DIR,
                               mel_spectrogram,
-                              SAMPLE_RATE,
-                              NUM_SAMPLES,
+                              44100,
+                              44100,
                               "cpu",
                               True)
 
@@ -72,7 +73,7 @@ if __name__ == "__main__":
     true_labels = []
     predicted_labels = []
 
-    interval = 0.1 * len(dmsp)
+    interval = int(0.1 * len(dmsp))
     for i in range(len(dmsp)):
         input = dmsp[i]
         predicted, expected = predict(cnn, input, class_mapping)
@@ -86,8 +87,8 @@ if __name__ == "__main__":
 
     cm = confusion_matrix(true_labels, predicted_labels, labels=class_mapping)
     print(cm)
-    # cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-    # cm = np.round(cm * 100, 2)
+    cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    cm = np.round(cm * 100, 2)
     df_cm = pd.DataFrame(cm, index=class_mapping, columns=class_mapping)
 
     plt.figure(figsize=(1080 / 96, 810 / 96), dpi=96)

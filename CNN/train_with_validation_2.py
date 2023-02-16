@@ -5,8 +5,8 @@ from torch.utils.data import DataLoader, random_split
 
 from datasetmelspecprep import DatasetMelSpecPrep
 # from cnn import CNNNetwork
-from cnn_vgg16 import CNNNetwork
-# from cnn_2 import CNNNetwork
+# from cnn_vgg16 import CNNNetwork
+from cnn_2 import CNNNetwork
 from sklearn.metrics import accuracy_score
 
 
@@ -123,7 +123,7 @@ def validate(model, data_loader, loss_fn, device):
 
 
 if __name__ == "__main__":
-    CHECKPOINTS_DIR = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/"
+    CHECKPOINTS_DIR = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints2/"
 
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
@@ -131,16 +131,16 @@ if __name__ == "__main__":
     # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
 
     if torch.cuda.is_available():
-        device = "cuda"
+        device = "cuda:1"
     else:
         device = "cpu"
         print(f"Using {device}")
 
-    SAMPLE_RATE = 44100
-    NUM_SAMPLES = 44100
-    N_FFT = 2048
-    HOP_LENGTH = 1024
-    N_MELS = 128
+    SAMPLE_RATE = 22050
+    NUM_SAMPLES = 22050
+    N_FFT = 1024
+    HOP_LENGTH = 512
+    N_MELS = 64
 
     # instantiating our dataset object and create data loader
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(

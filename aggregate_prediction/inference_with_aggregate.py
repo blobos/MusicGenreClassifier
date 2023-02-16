@@ -1,10 +1,11 @@
 import torch
 import torchaudio
 import csv
+import sys
 
-from cnn import CNNNetwork
-from datasetmelspecprep import DatasetMelSpecPrep
-from train import SAMPLE_RATE, NUM_SAMPLES
+from FYP.MusicGenreClassifier.CNN.cnn import CNNNetwork
+from FYP.MusicGenreClassifier.CNN.datasetmelspecprep import DatasetMelSpecPrep
+from FYP.MusicGenreClassifier.CNN.train_with_validation_binary import SAMPLE_RATE, NUM_SAMPLES
 
 
 
@@ -42,8 +43,8 @@ def predict(model, input):
 
 if __name__ == "__main__":
 
-    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
-    AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks/"
+    ANNOTATIONS_FILE = "/FYP/data/test_annotations.csv"
+    AUDIO_DIR = "/FYP/data/miniDataset/chunks/"
 
     # load back the model
     cnn = CNNNetwork()
@@ -78,7 +79,7 @@ if __name__ == "__main__":
     # make an inference
     predicted = predict(cnn, input)
 
-    with open("/home/student/Music/1/FYP/data/mini_train_annotations.csv", "r") as csvfile:
+    with open("/FYP/data/test_annotations.csv", "r") as csvfile:
         reader = csv.reader(csvfile)
         prediction = []
         i = 0
