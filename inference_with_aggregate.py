@@ -47,7 +47,7 @@ def file_prep(file, output_directory='./predict_track'):
         file_name = file.split("/")[-1]
         csv_path = output_directory + file_name + ".csv"
         print(csv_path)
-        chunks_to_CSV(output_directory, csv_path, False)
+        chunks_to_CSV(test_directory, csv_path, False)
     return test_directory, csv_path
 
 
@@ -87,7 +87,7 @@ def predict_vote():
 
 if __name__ == "__main__":
     test_directory, csv_path = file_prep(
-        "/home/student/Music/1/FYP/MusicGenreClassifier/aggregate_prediction/test2.mp3")
+        "/home/student/Music/1/FYP/MusicGenreClassifier/aggregate_prediction/predict_track/005_punk_rock_02 - Forward To Death.mp3")
     model_path = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/vgg16/lowest_val_loss.pth"
     parameters = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/vgg16/parameters.txt"
 
