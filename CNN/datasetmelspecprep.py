@@ -79,11 +79,11 @@ class DatasetMelSpecPrep(Dataset):
             fold = subgenre + "/" + filename  # folder of audiofile in SD
             path = os.path.join(self.audio_dir, fold, self.annotations.iloc[index, 0])
         else:
-            fold = self.annotations.iloc[index, 0][:-17]
+            # fold = self.annotations.iloc[index, 0][:-17]
             # print(self.audio_dir)
             # print(fold)
             # print(self.annotations.iloc[index, 0])
-            path = os.path.join(self.audio_dir, fold, self.annotations.iloc[index, 0])
+            path = os.path.join(self.audio_dir, self.annotations.iloc[index, 0])
         # print(path)
         return path
 
