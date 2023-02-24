@@ -1,8 +1,8 @@
 from pydub import AudioSegment
 from multiprocessing import Pool
 import os
-from chunks_to_CSV import chunks_to_CSV
-import csv
+# from chunks_to_CSV import chunks_to_CSV
+# import csv
 
 chunk_length = 30 * 1000  # 30 seconds pydub calculates in millisec
 overlap = 15 * 1000  # 15 seconds
