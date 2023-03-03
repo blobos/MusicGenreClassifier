@@ -64,11 +64,13 @@ def split_audio(file, output_directory, labelled):
                 print("no exist directory")
                 os.makedirs(chunk_directory)
             if not os.path.exists(chunk_directory + output_filename):
-                print(file)
+                print("creating: ", file)
                 chunk.export(chunk_directory + output_filename, format="wav", bitrate=bitrate)
                 # print("Processing chunk " + output_filename + ". Start = " + str(start) + " end = " + str(end))
                 chunk_counter = chunk_counter + 1
                 start += chunk_length - overlap
+            else:
+                print("already in folder: ", file)
 
         if not labelled: #for aggregate_prediction.load_file
             return chunk_directory
@@ -78,7 +80,7 @@ def split_audio(file, output_directory, labelled):
         print(e)
 
 
-def audio_split_pooling(input_directory, output_directory, labelled):
+def audio_split_pooling(input_directory, output_directory, pool_processes=128, labelled=False):
     # Run split_audio with pooling for files in input_directory
 
     audio_files = []
@@ -97,7 +99,7 @@ def audio_split_pooling(input_directory, output_directory, labelled):
     # print(audio_files)
     # for file in audio_files:
     #     split_audio(file,output_directory)
-    with Pool(processes=128) as pool:
+    with Pool(pool_processes) as pool:
         pool.starmap(split_audio, [(file, output_directory, labelled) for file in audio_files])
 
 

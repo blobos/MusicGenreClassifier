@@ -14,15 +14,14 @@ class DatasetMelSpecPrep(Dataset):
                  transformation,
                  target_sample_rate,
                  num_samples,
-                 device,
-                 labelled):
+                 device):
         self.annotations = pd.read_csv(annotations_file)
         self.audio_dir = audio_dir
         self.device = device
         self.transformation = transformation.to(self.device)
         self.target_sample_rate = target_sample_rate
         self.num_samples = num_samples
-        self.labelled = labelled
+        # self.labelled = labelled
 
     def __len__(self):
         return len(self.annotations)
@@ -37,10 +36,7 @@ class DatasetMelSpecPrep(Dataset):
         signal = self._cut_if_necessary(signal)
         signal = self._right_pad_if_necessary(signal)
         signal = self.transformation(signal)
-        if self.labelled:
-            return signal, expected_class
-        else:
-            return signal, audio_sample_path
+        return signal, expected_class, audio_sample_path
 
     def _cut_if_necessary(self, signal):
         if signal.shape[1] > self.num_samples:
@@ -72,19 +68,12 @@ class DatasetMelSpecPrep(Dataset):
         return signal
 
     def _get_audio_sample_path(self, index):
-        if self.labelled:
-            subgenre = self.annotations.iloc[index, 2]
-            filename = self.annotations.iloc[index, 0].split("_")
-            filename = filename[0] + "_" + filename[1] + "_" + filename[2]
-            fold = subgenre + "/" + filename  # folder of audiofile in SD
-            path = os.path.join(self.audio_dir, fold, self.annotations.iloc[index, 0])
-        else:
-            # fold = self.annotations.iloc[index, 0][:-17]
-            # print(self.audio_dir)
-            # print(fold)
-            # print(self.annotations.iloc[index, 0])
-            path = os.path.join(self.audio_dir, self.annotations.iloc[index, 0])
-        # print(path)
+        subgenre = self.annotations.iloc[index, 2]
+        filename = self.annotations.iloc[index, 0].split("_")
+        filename = filename[0] + "_" + filename[1] + "_" + filename[2]
+        fold = subgenre + "/" + filename  # folder of audiofile in SD
+        path = os.path.join(self.audio_dir, fold, self.annotations.iloc[index, 0])
+
         return path
 
     def _get_audio_sample_label(self, index):
@@ -92,8 +81,8 @@ class DatasetMelSpecPrep(Dataset):
 
 
 if __name__ == "__main__":
-    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
-    AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
+    ANNOTATIONS_FILE = "/FYP/data/train_annotations.csv"
+    AUDIO_DIR = "/FYP/data/train/chunks"
     SAMPLE_RATE = 22050
     NUM_SAMPLES = 22050
 

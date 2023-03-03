@@ -1,3 +1,6 @@
+#NOT USED
+#for testing usiing binary classification
+#appends if genre is selected genre or not on csv
 import csv
 og_csv = "/home/student/Music/1/FYP/data/train_annotations.csv"
 bin_csv = "/home/student/Music/1/FYP/data/train_annotations_binary.csv"
