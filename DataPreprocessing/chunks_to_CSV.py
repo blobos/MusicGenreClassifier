@@ -55,6 +55,7 @@ def chunks_to_CSV(chunk_directory, csv_path, labelled):
 
         # Write the sorted data to the CSV file
         writer.writerows(data)
+    print("File created at:", csv_path)
 
 
 

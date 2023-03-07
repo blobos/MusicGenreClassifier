@@ -1,3 +1,5 @@
+import os
+
 import torch
 import torchaudio
 from torch import nn
@@ -124,7 +126,8 @@ def validate(model, data_loader, loss_fn, device):
 
 if __name__ == "__main__":
     CHECKPOINTS_DIR = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/"
-
+    if not os.path.exists(CHECKPOINTS_DIR):
+        os.makedirs(CHECKPOINTS_DIR)
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
     # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"

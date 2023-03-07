@@ -1,103 +1,62 @@
-from cnn_vgg16 import CNNNetwork
-#like transfer learning
-
-from torch import nn
-# from torchinfo import summary
-from torchsummary import summary
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchsummary as summary
 
 
-class CNNNetwork(nn.Module):  # inherit for nn.Module (pytorch NN)
+class CRNN(nn.Module):
+    def __init__(self, num_classes):
+        super(CRNN, self).__init__()
+        self.cnn = nn.Sequential(
+            nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Dropout(p=0.2),
 
-    def __init__(self):
-        super().__init__()  # ????
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(
-                in_channels=1,  # since downsampled2mono
-                out_channels=32,  # 32 filters
-                kernel_size=3,
-                stride=1,
-                padding=2
-            ),
-            nn.ReLU(),
-            nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.BatchNorm2d(32),
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
-            nn.Dropout(0.25)
-        )
-        self.conv2 = nn.Sequential(
-            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.BatchNorm2d(64),
+            nn.Dropout(p=0.2),
+
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
-            nn.Dropout(0.25)
-        )
-        self.conv3 = nn.Sequential(
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.Conv2d(128, 128, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.Conv2d(128, 128, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.BatchNorm2d(128),
+            nn.Dropout(p=0.2),
+
+            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2),
-            nn.Dropout(0.25)
-        )
-        self.conv4 = nn.Sequential(
-            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.BatchNorm2d(256),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Dropout(0.25)
-        )
-        self.conv5 = nn.Sequential(
-            nn.Conv2d(256, 512, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=2),
-            nn.ReLU(),
-            nn.BatchNorm2d(512),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Dropout(0.25)
+            nn.Dropout(p=0.2),
         )
         self.flatten = nn.Flatten()
-        # self.dense = nn.Sequential(
-        #     nn.Linear(512 * 9 * 7, 4096),
-        #     nn.ReLU(True),
-        #     nn.Dropout(),
-        #     nn.Linear(4096, 4096),
-        #     nn.ReLU(True),
-        #     nn.Dropout(),
-        #     nn.Linear(4096, 14),
-        # )
-        # # dense layer output shape: (ouput ch * freq axis * time axis, classes) = flatten or (in, out)
-        # self.softmax = nn.Softmax(dim=1)
-        # self.rnn1 = nn.RNN()
+        #FIXME: find dimensions of flatten to find input size for LSTM
+        self.rnn = nn.LSTM(input_size=256, hidden_size=4096, num_layers=2, batch_first=True)
+        self.dense = nn.Sequential(
+            nn.Linear(512 * 9 * 7, 4096),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(4096, 4096),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(4096, num_classes),
+        )
 
     def forward(self, input_data):
-        # print(input_data.shape)
-        x = self.conv1(input_data)
-        # print(x.shape)
-        x = self.conv2(x)
-        x = self.conv3(x)
-        x = self.conv4(x)
-        x = self.conv5(x)
-        # print(x.shape)
+        x = self.cnn(input_data)
         x = self.flatten(x)
-        # print(x.shape)
-        # x = self.rnn1(x, 4096, 1, batch_first = True)
-        # logits = self.dense(x)
-        # predictions = logits
-        # return predictions
+        # x = self.dense
+
+
+        # RNN
+        # h0 = torch.zeros(2, batch_size, 256).to(x.device)  # 2 because num_layers=2
+        # c0 = torch.zeros(2, batch_size, 256).to(x.device)
+        # x, _ = self.rnn(x, (h0, c0))
+        # x = self.fc(x[:, -1, :])  # last timestep
+
+        return x
+
 
 if __name__ == "__main__":
-    cnn = CNNNetwork()
-    summary(cnn.cuda(), (1, 128, 44))  # mel spectrogram dim (ch, freq axis(mel bins), time axis) = input dimensions
-
+    num_classes = 12
+    crnn = CRNN(num_classes)
+    summary(crnn.cuda(), (1, 128, 44))  # mel spectrogram dim (ch, freq axis(mel bins), time axis) = input dimensions
