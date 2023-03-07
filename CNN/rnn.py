@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+from torchsummary import summary
 
 class SimpleRNN(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, num_classes):
@@ -18,3 +18,7 @@ class SimpleRNN(nn.Module):
         out, _ = self.rnn2(out, h1)
         out = self.fc(out[:, -1, :])
         return out
+
+if __name__ == "__main__":
+    cnn = SimpleRNN(1,4096)
+    summary(cnn.cuda(), (1, 128, 44))

@@ -4,7 +4,7 @@ import shutil
 import pandas as pd
 import ast
 
-csv_path = "/home/student/Music/1/FYP/data/FMA/tracks.csv"
+csv_path = "/FYP/data/FMA/tracks.csv"
 
 fma_subgenres = {167: "black_metal", 101: "death_metal", 182: "house_electronic", 181: "techno_electronic",
                  359: "dreampop", 98: "progressive_rock", 26: "post_rock", 25: "punk"}
