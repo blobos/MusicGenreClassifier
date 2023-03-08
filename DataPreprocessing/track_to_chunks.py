@@ -41,13 +41,12 @@ def split_audio(file, output_directory, df, labelled):
             #trim to nearest 30 seconds
             track_length = track_length - (track_length % (30 * 1000))
 
-        #FIXME: last chunks <30 seconds
 
         chunk_counter = 1
-        total_subgenre_track_chunks = track_length // (chunk_length - overlap)  # 30 sec chunks with 15 overlap
+        total_subgenre_track_chunks = (track_length-chunk_length) // (chunk_length - overlap) + 1 # 30 sec chunks with 15 overlap
         # print(file_name, start, track_length)
         # print("-------------------")
-        while start < track_length:
+        while chunk_counter < total_subgenre_track_chunks+1:
             end = start + chunk_length
             chunk = audio_track[start:end]
 
