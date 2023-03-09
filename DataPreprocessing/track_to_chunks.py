@@ -4,13 +4,13 @@ from multiprocessing import Pool
 import os
 import traceback
 import logging  # added import for logging
-from tqdm import tqdm  # added import for progress bar
+# from tqdm import tqdm  # added import for progress bar
 
 #check if in csv rather than iterate through folder
 logging.basicConfig(filename='track_to_chunks_error.log', level=logging.ERROR)
 
 chunk_length = 30 * 1000  # 30 seconds pydub calculates in millisec
-overlap = 15 * 1000  # 15 seconds
+overlap = 0.5 * chunk_length  # 15 seconds
 bitrate = "128k"  # 128kbps
 
 
@@ -43,7 +43,9 @@ def split_audio(file, output_directory, df, labelled):
 
 
         chunk_counter = 1
-        total_subgenre_track_chunks = (track_length-chunk_length) // (chunk_length - overlap) + 1 # 30 sec chunks with 15 overlap
+        total_subgenre_track_chunks = track_length / (chunk_length - overlap) - 1
+        # 30 sec chunks with 15 overlap, -1 because chunks are 30 sec not 15, so cannot fit chunk into last 15 sec
+
         # print(file_name, start, track_length)
         # print("-------------------")
         while chunk_counter < total_subgenre_track_chunks+1:
@@ -80,8 +82,8 @@ def split_audio(file, output_directory, df, labelled):
                 # print("Processing chunk " + output_filename + ". Start = " + str(start) + " end = " + str(end))
                 chunk_counter = chunk_counter + 1
                 start += chunk_length - overlap
-            else:
-                print(f"file f{output_filename} in directory")
+            # else:
+                # print(f"file f{output_filename} in directory")
 
         if not labelled: #for aggregate_prediction.load_file
             return chunk_directory
@@ -97,6 +99,7 @@ def audio_split_pooling(input_directory, output_directory, chunk_db_csv='', pool
     if chunk_db_csv:
         #make series to match for existing chunkfiles
         df = pd.read_csv(chunk_db_csv)
+        print(df.head())
         df['subgenre_track_counter'] = df['subgenre_track_counter'].astype(str).str.zfill(3)
         df['check'] = df['subgenre']+"_" + df['subgenre_track_counter']
     else:

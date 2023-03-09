@@ -3,6 +3,7 @@
 import os
 import csv
 import shutil
+from chunks_to_CSV import chunks_to_CSV
 
 
 def find_files(path, size):
@@ -16,13 +17,20 @@ def find_files(path, size):
     return files_list
 
 
-def delete_directory(files_list):
-    for file_path in files_list:
-        # print(file_path[0])+
-        dir_to_remove = os.path.dirname(file_path[0])
-        if os.path.exists(dir_to_remove):
-            # shutil.rmtree(dir_to_remove)
-            print(f"Deleted directory of: {file_path[0]}")
+def delete(files_list, dir=False):
+    if dir:
+        for file_path in files_list:
+            #remove entire directory
+            dir_to_remove = os.path.dirname(file_path[0])
+            if os.path.exists(dir_to_remove):
+                shutil.rmtree(dir_to_remove)
+                print(f"Deleted directory of: {file_path[0]}")
+    else:
+        for file_path in files_list:
+            #remove offending file
+            os.remove(file_path[0])
+            print(f"Deleted: {file_path[0]}")
+
 
 
 path = "/home/student/Music/1/FYP/data/train/chunks"
@@ -40,4 +48,8 @@ with open(csv_file, mode='w') as file:
 
 print(f"Found {len(files)} files smaller than {size} bytes, saved to {csv_file}")
 
-delete_directory(files)
+delete(files)
+#update csv
+chunk_directory = "/home/student/Music/1/FYP/data/train/chunks"
+csv_path = "/home/student/Music/1/FYP/data/train_annotations.csv"
+chunks_to_CSV(chunk_directory, csv_path)
