@@ -1,11 +1,12 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchsummary as summary
+from torch import nn
+# from torchinfo import summary
+from torchsummary import summary
 
 
-class CRNN(nn.Module):
-    def __init__(self, num_classes):
+class CRNN(nn.Module):  # inherit for nn.Module (pytorch NN)
+
+    def __init__(self):
+        super().__init__()  # ????
         super(CRNN, self).__init__()
         self.cnn = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, padding=1),
@@ -29,34 +30,29 @@ class CRNN(nn.Module):
             nn.Dropout(p=0.2),
         )
         self.flatten = nn.Flatten()
-        #FIXME: find dimensions of flatten to find input size for LSTM
-        # self.rnn = nn.LSTM(input_size=256, hidden_size=4096, num_layers=2, batch_first=True)
         self.dense = nn.Sequential(
-            nn.Linear(512 * 9 * 7, 4096),
+            nn.Linear(4096, 4096),
             nn.ReLU(True),
             nn.Dropout(),
             nn.Linear(4096, 4096),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, num_classes),
+            nn.Linear(4096, 14),
         )
+        # dense layer output shape: (ouput ch * freq axis * time axis, classes) = flatten or (in, out)
+        # self.softmax = nn.Softmax(dim=1)
 
     def forward(self, input_data):
+        # print(input_data.shape)
         x = self.cnn(input_data)
         x = self.flatten(x)
-        # x = self.dense
-
-
-        # RNN
-        # h0 = torch.zeros(2, batch_size, 256).to(x.device)  # 2 because num_layers=2
-        # c0 = torch.zeros(2, batch_size, 256).to(x.device)
-        # x, _ = self.rnn(x, (h0, c0))
-        # x = self.fc(x[:, -1, :])  # last timestep
-
-        # return x
-
+        print(x.shape)
+        x = self.dense(x)
+        # logits = self.dense(x)
+        # predictions = logits
+        # return predictions
 
 if __name__ == "__main__":
-    num_classes = 12
-    crnn = CRNN(num_classes)
-    summary(crnn.cuda(), (1, 128, 44))  # mel spectrogram dim (ch, freq axis(mel bins), time axis) = input dimensions
+    cnn = CRNN()
+    summary(cnn.cuda(), (1, 128, 44))  # mel spectrogram dim (ch, freq axis(mel bins), time axis) = input dimensions
+
