@@ -3,7 +3,7 @@ import csv
 
 
 
-def chunks_to_CSV(chunk_directory, csv_path, labelled):
+def chunks_to_CSV(chunk_directory, csv_path, labelled=True):
     subgenre_map = {0: "alternative_rock", 1: "black_metal", 2: "death_metal", 3: "dreampop_rock", 4: "heavy_metal",
                     5: "house_electronic", 6: "indie_rock", 7: "post_rock", 8: "progressive_rock", 9: "punk_rock",
                     10: "synthwave_electronic", 11: "techno_electronic", 12: "thrash_metal", 13: "trance_electronic"}
@@ -63,4 +63,4 @@ def chunks_to_CSV(chunk_directory, csv_path, labelled):
 if __name__ == "__main__":
     chunk_directory = "/home/student/Music/1/FYP/data/train/chunks"
     csv_path = "/home/student/Music/1/FYP/data/train_annotations.csv"
-    chunks_to_CSV(chunk_directory, csv_path, True)
+    chunks_to_CSV(chunk_directory, csv_path)
