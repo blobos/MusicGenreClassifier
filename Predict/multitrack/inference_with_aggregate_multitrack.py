@@ -14,13 +14,11 @@ from datasetmelspecprep_for_multitrack import DatasetMelSpecPrep
 
 
 class_mapping = [
-    "alternative_rock",
     "black_metal",
     "death_metal",
     "dreampop_rock",
     "heavy_metal",
     "house_electronic",
-    "indie_rock",
     "post_rock",
     "progressive_rock",
     "punk_rock",
@@ -66,18 +64,19 @@ def prediction_vote(group):
 
 if __name__ == "__main__":
 
-
-    model_path = "/FYP/MusicGenreClassifier/CNN/trained/vgg16/lowest_val_loss.pth"
-    parameters = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/vgg16/parameters.txt"
+    # Replace model_path and parameters.txt
+    model_path = "../../CNN/checkpoints/lowest_val_loss.pth"
+    parameters = "../../CNN/checkpoints/parameters.txt"
+    prediction_csv_path = "../../CNN/checkpoints/"
 
     #Get audio sample parameters from parameters.txt for mel spectrogram transformations
     with open(parameters, "r") as f:
         line = f.readlines()
-        SAMPLE_RATE = int(line[6].split()[-1])
+        SAMPLE_RATE = int(line[5].split()[-1])
         NUM_SAMPLES = SAMPLE_RATE
-        N_FFT = int(line[7].split()[-1])
-        HOP_LENGTH = int(line[8].split()[-1])
-        N_MELS = int(line[9].split()[-1])
+        N_FFT = int(line[6].split()[-1])
+        HOP_LENGTH = int(line[7].split()[-1])
+        N_MELS = int(line[8].split()[-1])
         print(f"Sample Rate: {SAMPLE_RATE}\n"
               f"N_FFT: {N_FFT}\n"
               f"Hop length: {HOP_LENGTH}\n"
@@ -92,8 +91,8 @@ if __name__ == "__main__":
         n_mels=N_MELS
     )
 
-    ANNOTATIONS_FILE = "/FYP/data/test_annotations.csv"
-    AUDIO_DIR = "/FYP/data/test/chunks"
+    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
+    AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
     cnn = CNNNetwork()
     state_dict = torch.load(model_path)
     cnn.load_state_dict(state_dict)
@@ -109,11 +108,12 @@ if __name__ == "__main__":
     prediction2df(chunk_prediction_list)
 
     chunk_predictions = pd.DataFrame(chunk_prediction_list, columns=['path', 'expected', 'prediction'])
-    predictions_csv_path = '../../CNN/trained/vgg16/chunk_predictions.csv'
-    chunk_predictions.to_csv(predictions_csv_path)
+    chunk_predictions_csv_path = prediction_csv_path + 'chunk_predictions.csv'
+    chunk_predictions.to_csv(chunk_predictions_csv_path)
     print("df.head", chunk_predictions.head())
     grouped = chunk_predictions.groupby(chunk_predictions["path"].str[:-17]).apply(prediction_vote)
     final_predictions_list = []
+
     for group_name, voted_prediction in grouped.items():
         #from first row in group get:
         # chunk_prediction = chunk_predictions.loc[chunk_predictions["path"].str[:-17] == group_name, "prediction"].iloc[0]
@@ -121,7 +121,7 @@ if __name__ == "__main__":
         final_predictions_list.append((group_name, group_expected, voted_prediction))
 
     pd.DataFrame(final_predictions_list, columns=['name', 'expected', 'prediction']).to_csv(
-        '../../CNN/trained/vgg16/song_predictions.csv')
+        prediction_csv_path + 'song_predictions.csv')
     # Print the new list
     print(final_predictions_list)
 

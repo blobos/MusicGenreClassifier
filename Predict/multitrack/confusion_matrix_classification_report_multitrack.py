@@ -7,13 +7,11 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report
 
 class_mapping = [
-    "alternative_rock",
     "black_metal",
     "death_metal",
     "dreampop_rock",
     "heavy_metal",
     "house_electronic",
-    "indie_rock",
     "post_rock",
     "progressive_rock",
     "punk_rock",
@@ -34,11 +32,11 @@ if __name__ == "__main__":
     # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
 
     num_classes = len(class_mapping)
-    song_predictions_csv = "/home/student/Music/1/FYP/MusicGenreClassifier/song_predictions.csv"
+    song_predictions_csv = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/song_predictions.csv"
     df = pd.read_csv(song_predictions_csv)
     print(df.head())
 
-
+    print(class_mapping)
 
 
     cm = confusion_matrix(df['expected'].map(lambda x: class_mapping[x]), df['prediction'].map(lambda x: class_mapping[x]), labels=class_mapping)
@@ -56,12 +54,12 @@ if __name__ == "__main__":
 
     title = 'song level prediction'
     plt.title(title, y=1.05)
-    plt.savefig(title + "_confusion_matrix.png")
+    plt.savefig(title + "_confusion_matrix_voting.png")
     # plt.show()
     plt.close()
 
     classification_report = classification_report(df['expected'].map(lambda x: class_mapping[x]), df['prediction'].map(lambda x: class_mapping[x]), labels=class_mapping)
-    with open(title + "_classification_report.txt", "a") as f:
+    with open(title + "_classification_report_voting.txt", "a") as f:
         f.write(classification_report)
 
     print(classification_report)

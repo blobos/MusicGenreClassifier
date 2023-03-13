@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/training_log.txt"
+model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/training_log_spikes_removed.txt"
 # Read the data from the text file
 with open(model, "r") as f:
     data = f.read()
@@ -52,5 +52,5 @@ ax2.annotate(f"Max validation accuracy: {validation_accuracy[max_index_acc]:.2f}
 
 # Display the picture
 plt.tight_layout()
-plt.savefig(model + "_Loss.png")
+plt.savefig(model + "_Loss_spikes_removed.png")
 plt.show()

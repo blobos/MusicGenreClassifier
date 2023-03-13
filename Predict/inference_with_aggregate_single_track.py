@@ -30,7 +30,7 @@ class_mapping = [
 ]
 
 
-def file_prep(file, output_directory='./predict_track'):
+def file_prep(file, output_directory='./single_track'):
     # load file
     # print(file)
     # print(output_directory)
@@ -87,7 +87,7 @@ def predict_vote():
 
 if __name__ == "__main__":
     test_directory, csv_path = file_prep(
-        "/FYP/MusicGenreClassifier/aggregate_prediction/predict_track/005_punk_rock_02 - Forward To Death.mp3")
+        "/FYP/MusicGenreClassifier/aggregate_prediction/single_track/005_punk_rock_02 - Forward To Death.mp3")
     model_path = "/FYP/MusicGenreClassifier/CNN/trained/vgg16/lowest_val_loss.pth"
     parameters = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained/vgg16/parameters.txt"
 

@@ -1,4 +1,4 @@
-# file size should be 5.3MB (5,292,044 bytes) at 30secs
+# file size should be 5.3MB (5,292,044 bytes) at  and 44.1khz
 # find, log and delete files
 import os
 import csv
@@ -13,7 +13,7 @@ def find_files(path, size):
             file_path = os.path.join(dirpath, filename)
             if os.path.isfile(file_path) and os.path.getsize(file_path) < size:
                 files_list.append([file_path, os.path.getsize(file_path), size - os.path.getsize(file_path)])
-    print(files_list)
+    # print(files_list)
     return files_list
 
 
@@ -28,7 +28,7 @@ def delete(files_list, dir=False):
     else:
         for file_path in files_list:
             #remove offending file
-            os.remove(file_path[0])
+            # os.remove(file_path[0])
             print(f"Deleted: {file_path[0]}")
 
 

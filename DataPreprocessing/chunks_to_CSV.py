@@ -4,9 +4,9 @@ import csv
 
 
 def chunks_to_CSV(chunk_directory, csv_path, labelled=True):
-    subgenre_map = {0: "alternative_rock", 1: "black_metal", 2: "death_metal", 3: "dreampop_rock", 4: "heavy_metal",
-                    5: "house_electronic", 6: "indie_rock", 7: "post_rock", 8: "progressive_rock", 9: "punk_rock",
-                    10: "synthwave_electronic", 11: "techno_electronic", 12: "thrash_metal", 13: "trance_electronic"}
+    subgenre_map = {0: "black_metal", 1: "death_metal", 2: "dreampop_rock", 3: "heavy_metal",
+                    4: "house_electronic", 5: "post_rock", 6: "progressive_rock", 7: "punk_rock",
+                    8: "synthwave_electronic", 9: "techno_electronic", 10: "thrash_metal", 11: "trance_electronic"}
 
     # Create the CSV file and write the header
 
