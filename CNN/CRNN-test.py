@@ -53,6 +53,6 @@ class CRNN(nn.Module):  # inherit for nn.Module (pytorch NN)
         # return predictions
 
 if __name__ == "__main__":
-    cnn = CRNN()
-    summary(cnn.cuda(), (1, 128, 44))  # mel spectrogram dim (ch, freq axis(mel bins), time axis) = input dimensions
+    crnn = CRNN().to('cpu')
+    summary(crnn, (1, 128, 44))  # mel spectrogram dim (ch, freq axis(mel bins), time axis) = input dimensions
 
