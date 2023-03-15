@@ -41,8 +41,8 @@ def predict(model, input, class_mapping):
 
 
 if __name__ == "__main__":
-    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
-    AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
+    ANNOTATIONS_FILE = "/FYP/data/test_annotations.csv"
+    AUDIO_DIR = "/FYP/data/test/chunks"
     model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/lowest_val_loss.pth"
 
      # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"

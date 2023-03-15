@@ -40,8 +40,8 @@ def predict(model, input, class_mapping):
 
 if __name__ == "__main__":
 
-    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/test_annotations.csv"
-    AUDIO_DIR = "/home/student/Music/1/FYP/data/test/chunks"
+    ANNOTATIONS_FILE = "/FYP/data/test_annotations.csv"
+    AUDIO_DIR = "/FYP/data/test/chunks"
 
     # load back the model
     cnn = CNNNetwork()
