@@ -106,7 +106,7 @@ if __name__ == "__main__":
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
         sample_rate=SAMPLE_RATE,
         n_fft=2048,
-        hop_length=512, #default = n_fft/2
+        hop_length=1024, #default = n_fft/2
         n_mels=64
     )
 

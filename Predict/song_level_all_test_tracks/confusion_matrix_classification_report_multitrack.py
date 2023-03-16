@@ -6,6 +6,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report
 
+from inference_voting_multitrack import inference_voting_multitrack
+
 class_mapping = [
     "black_metal",
     "death_metal",
@@ -21,25 +23,31 @@ class_mapping = [
     "trance_electronic"
 ]
 
-
-
-
-
 if __name__ == "__main__":
+    checkpoint_dir = "../../CNN/checkpoints/"
+    model_path = checkpoint_dir + "lowest_val_loss.pth"
+    parameters = checkpoint_dir + "parameters.txt"
+    prediction_output_csv_dir = "../../CNN/checkpoints/"
+    audiofile_annotations = "/home/student/Music/1/FYP/data/test_annotations.csv"
+    audiofile_dir = "/home/student/Music/1/FYP/data/test/chunks"
 
+    song_predictions_csv = inference_voting_multitrack(model_path=model_path,
+                                                       network_parameters=parameters,
+                                                       prediction_output_csv_dir=prediction_output_csv_dir,
+                                                       audiofile_dir=audiofile_dir,
+                                                       audiofile_annotations=audiofile_annotations)
 
-     # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
+    # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
     # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
 
     num_classes = len(class_mapping)
-    song_predictions_csv = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/song_predictions.csv"
     df = pd.read_csv(song_predictions_csv)
     print(df.head())
 
     print(class_mapping)
 
-
-    cm = confusion_matrix(df['expected'].map(lambda x: class_mapping[x]), df['prediction'].map(lambda x: class_mapping[x]), labels=class_mapping)
+    cm = confusion_matrix(df['expected'].map(lambda x: class_mapping[x]),
+                          df['prediction'].map(lambda x: class_mapping[x]), labels=class_mapping)
     print(cm)
     cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     cm = np.round(cm * 100, 2)
@@ -54,13 +62,14 @@ if __name__ == "__main__":
 
     title = 'song level prediction'
     plt.title(title, y=1.05)
-    plt.savefig(title + "_confusion_matrix_voting.png")
+    plt.savefig(checkpoint_dir + title + "_confusion_matrix_voting.png")
     # plt.show()
     plt.close()
 
-    classification_report = classification_report(df['expected'].map(lambda x: class_mapping[x]), df['prediction'].map(lambda x: class_mapping[x]), labels=class_mapping)
-    with open(title + "_classification_report_voting.txt", "a") as f:
+    classification_report = classification_report(df['expected'].map(lambda x: class_mapping[x]),
+                                                  df['prediction'].map(lambda x: class_mapping[x]),
+                                                  labels=class_mapping)
+    with open(checkpoint_dir + title + "_classification_report_voting.txt", "a") as f:
         f.write(classification_report)
 
     print(classification_report)
-
