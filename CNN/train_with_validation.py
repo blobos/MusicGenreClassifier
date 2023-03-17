@@ -131,7 +131,7 @@ if __name__ == "__main__":
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
     # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
-    # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
+    # AUDIO_DIR = "/home/student/Music/1/FYP/data/mini/chunks"
 
     if torch.cuda.is_available():
         device = "cuda"

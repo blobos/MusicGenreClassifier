@@ -10,8 +10,8 @@ TRAIN_CSV_DIRECTORY = "/home/student/Music/1/FYP/data/train_annotations.csv"
 # PREDICT_OUTPUT_DIRECTORY = "/home/student/Music/1/FYP/data/test/chunks/"
 # PREDICT_CSV_DIRECTORY = "/home/student/Music/1/FYP/data/test_annotations.csv"
 
-# TRAIN_INPUT_DIRECTORY = "/home/student/Music/1/FYP/data/miniDataset/tracks/"  # "/FYP/data/train/tracks/"
-# TRAIN_OUTPUT_DIRECTORY = "/home/student/Music/1/FYP/data/miniDataset/chunks/"  # "data/train/chunks/"
+# TRAIN_INPUT_DIRECTORY = "/home/student/Music/1/FYP/data/mini/tracks/"  # "/FYP/data/train/tracks/"
+# TRAIN_OUTPUT_DIRECTORY = "/home/student/Music/1/FYP/data/mini/chunks/"  # "data/train/chunks/"
 # TRAIN_CSV_DIRECTORY = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
 
 # split chunks

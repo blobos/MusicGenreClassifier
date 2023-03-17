@@ -46,7 +46,7 @@ if __name__ == "__main__":
     model = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/lowest_val_loss.pth"
 
      # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
-    # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
+    # AUDIO_DIR = "/home/student/Music/1/FYP/data/mini/chunks"
 
     # load back the model
     cnn = CNNNetwork()

@@ -38,7 +38,7 @@ if __name__ == "__main__":
                                                        audiofile_annotations=audiofile_annotations)
 
     # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
-    # AUDIO_DIR = "/home/student/Music/1/FYP/data/miniDataset/chunks"
+    # AUDIO_DIR = "/home/student/Music/1/FYP/data/mini/chunks"
 
     num_classes = len(class_mapping)
     df = pd.read_csv(song_predictions_csv)
