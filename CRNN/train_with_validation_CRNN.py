@@ -2,13 +2,15 @@ import os
 
 import torch
 import torchaudio
-from tqdm import tqdm
+import torch.nn.functional as F
 from torch import nn
 from torch.utils.data import DataLoader, random_split
 
+from tqdm import tqdm
+
 from FYP.MusicGenreClassifier.DataPreprocessing.datasetmelspecprep import DatasetMelSpecPrep
 # from cnn import CNNNetwork
-from FYP.MusicGenreClassifier.CNN.Models.cnn_vgg19_leaky_relu_batchnorm_dropout import CNNNetwork
+from CRNN import CRNN
 # from cnn_2 import CNNNetwork
 from sklearn.metrics import accuracy_score
 
@@ -25,6 +27,7 @@ def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
     progress_bar = tqdm(data_loader, desc='Training', unit='batch')
     # for input, target in data_loader:
     for input, target in progress_bar:
+        target =  F.one_hot(target, 12)
         input, target = input.to(device), target.to(device)
 
         # calculate loss
@@ -131,7 +134,7 @@ def validate(model, data_loader, loss_fn, device):
 
 
 if __name__ == "__main__":
-    CHECKPOINTS_DIR = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/checkpoints/"
+    CHECKPOINTS_DIR = "/home/student/Music/1/FYP/MusicGenreClassifier/CRNN/checkpoints/"
     if not os.path.exists(CHECKPOINTS_DIR):
         os.makedirs(CHECKPOINTS_DIR)
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
@@ -140,7 +143,7 @@ if __name__ == "__main__":
     # AUDIO_DIR = "/home/student/Music/1/FYP/data/mini/chunks"
 
     if torch.cuda.is_available():
-        device = "cuda:0"
+        device = "cuda"
     else:
         device = "cpu"
         print(f"Using {device}")
@@ -169,7 +172,7 @@ if __name__ == "__main__":
                               device,
                               labelled=True)
 
-    BATCH_SIZE = 32
+    BATCH_SIZE = 64
     EPOCHS = 200
     LEARNING_RATE = 0.0001
 
@@ -178,7 +181,7 @@ if __name__ == "__main__":
     val_dataloader = DataLoader(val_data, BATCH_SIZE, shuffle=True)
 
     # construct model and assign it to device
-    cnn = CNNNetwork().to(device)
+    cnn = CRNN().to(device)
     # cnn = CNNNetwork1().to(device)
     print(cnn)
 

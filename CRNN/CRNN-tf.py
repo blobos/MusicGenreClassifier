@@ -16,6 +16,8 @@ n_mels = 64
 fmax = 8000
 n_frames = 1 + int((sr * duration - n_fft + hop_length) / hop_length)
 
+# FIXME: Make Class for Model
+
 # Define the model architecture
 model = Sequential()
 model.add(Conv2D(filters=32, kernel_size=((3, 3)), padding='same', activation='relu',
@@ -72,7 +74,7 @@ print(model.output_shape, "soft_max")
 # Load the training data
 
 
-def load_data(csv_file_path, sr=44100, duration=30, hop_length=512, n_fft=1024, n_mels=64, fmax=8000):
+def load_data(file_directory, csv_file_path, sr=44100, duration=30, hop_length=512, n_fft=1024, n_mels=64, fmax=8000):
     print("Loading data:")
     # Read in the CSV file
     df = pd.read_csv(csv_file_path)
@@ -87,9 +89,6 @@ def load_data(csv_file_path, sr=44100, duration=30, hop_length=512, n_fft=1024, 
 
     # for index, row in df.iterrows():
     for index, row in tqdm(df.iterrows(), total=len(df)):
-        # Load the audio file
-        # file_directory = "/home/student/Music/1/FYP/data/train/chunks"
-        file_directory = "/FYP/data/mini/chunks"
         subgenre = row['subgenre']
         subgenre_track_counter = row['subgenre_track_counter']
         chunk_number = row['chunk_number']
@@ -113,7 +112,8 @@ def load_data(csv_file_path, sr=44100, duration=30, hop_length=512, n_fft=1024, 
         total_chunks = row['total_chunk_number']
 
         # Add the label and total number of chunks to the label array
-        y.append((label, total_chunks))
+        # y.append((label, total_chunks))
+        y.append(label)
 
     print(len(x))
     # Convert the data and label arrays to numpy arrays
@@ -126,13 +126,37 @@ def load_data(csv_file_path, sr=44100, duration=30, hop_length=512, n_fft=1024, 
 
 model.summary()
 
-# x_train, y_train = load_data("/home/student/Music/1/FYP/data/train_annotations.csv")
-x_train, y_train = load_data("/FYP/data/mini_annotations.csv")
+AUDIO_DIR = "/home/student/Music/1/FYP/data/mini/chunks"  # /home/student/Music/1/FYP/data/train/chunks"
+TRAIN_ANNOTATIONS = "/home/student/Music/1/FYP/data/mini_annotations.csv"  # "/home/student/Music/1/FYP/data/train_annotations.csv"
+
+x_train, y_train = load_data(AUDIO_DIR, TRAIN_ANNOTATIONS)
 print(len(x_train[0]))
 print("dtype: ", x_train.dtype)
 # Compile the model
-# can change to sparse cat_crossentropy to get int instead of one-hot vec
-model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy'])
-history = model.fit(x_train, y_train, verbose=1, validation_split=0.2, batch_size=1, epochs=1)
+# can change to sparse cat_crossentropy to get int(class_id) instead of one-hot vec
+EPOCHS = 200
+BATCH_SIZE = 64
+checkpoints_dir = "CRNN/checkpoints"
+model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
+    filepath=checkpoints_dir,
+    save_weights_only=True,
+    monitor='val_accuracy',
+    mode='max',
+    save_best_only=True,
+    verbose=1,
+    save_freq=5
+)
+model_early_stop = tf.keras.callbacks.EarlyStopping(
+    monitor="val_loss",
+    min_delta=0,
+    patience=50,
+    verbose=1,
+    mode="auto",
+    baseline=None,
+    restore_best_weights=False,
+    start_from_epoch=0,
+)
 
-#logits [32,12] == [B, classes], labels[64]=[B*2]
+model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy'])
+history = model.fit(x_train, y_train, verbose=1, validation_split=0.2, batch_size=BATCH_SIZE, epochs=EPOCHS,
+                    callbacks=[model_checkpoint, model_early_stop])
