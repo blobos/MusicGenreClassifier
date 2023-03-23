@@ -1,5 +1,4 @@
 Parameters
-VGG16
 Batch size: 128
 Epochs: 100
 Learning rate: 0.001

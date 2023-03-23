@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     # instantiate loss function + optimiser
     loss_fn = nn.CrossEntropyLoss()
-    optimiser = torch.optim.Adam(cnn.parameters(),
+    optimiser = torch.optim.Adam(cnn.network_parameters(),
                                  lr=LEARNING_RATE)
     # train model
     train(cnn, train_data_loader, loss_fn, optimiser, device, EPOCHS)

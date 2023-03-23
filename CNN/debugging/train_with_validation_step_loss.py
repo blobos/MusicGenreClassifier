@@ -209,7 +209,7 @@ if __name__ == "__main__":
 
     # initialise loss function + optimiser
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(cnn.parameters(),
+    optimizer = torch.optim.Adam(cnn.network_parameters(),
                                  lr=LEARNING_RATE)
 
     # train model

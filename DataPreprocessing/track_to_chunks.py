@@ -111,8 +111,6 @@ def audio_split_pooling(input_directory, output_directory, chunk_db_csv='', pool
     audio_files = []
     # print(audio_files)
 
-    #FIXME: move the existing file check here before adding to audio_files list, rather than per file in split_audio()
-
     # Get a list of all the subdirectories
     subdirectories = [x[0] for x in os.walk(input_directory)]
 

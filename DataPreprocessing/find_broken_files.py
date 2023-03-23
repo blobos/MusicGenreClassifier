@@ -17,13 +17,14 @@ def find_files(path, size):
     return files_list
 
 
-def delete(files_list, dir=False):
+def delete(files_list, dir=True):
+    removed_dir = "/home/student/Music/1/FYP/data/train/chunks_removed"
     if dir:
         for file_path in files_list:
-            #remove entire directory
+            #move entire directory
             dir_to_remove = os.path.dirname(file_path[0])
             if os.path.exists(dir_to_remove):
-                shutil.rmtree(dir_to_remove)
+                shutil.move(dir_to_remove, removed_dir)
                 print(f"Deleted directory of: {file_path[0]}")
     else:
         for file_path in files_list:
@@ -35,7 +36,7 @@ def delete(files_list, dir=False):
 
 path = "/home/student/Music/1/FYP/data/train/chunks"
 size = 5292044  # size in bytes, change to desired size
-csv_file = "files.csv"
+csv_file = "smaller_files.csv"
 
 files = find_files(path, size)
 
@@ -52,4 +53,4 @@ delete(files)
 #update csv
 chunk_directory = "/home/student/Music/1/FYP/data/train/chunks"
 csv_path = "/home/student/Music/1/FYP/data/train_annotations.csv"
-chunks_to_CSV(chunk_directory, csv_path)
+# chunks_to_CSV(chunk_directory, csv_path)

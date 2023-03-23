@@ -24,16 +24,16 @@ class_mapping = [
 ]
 
 if __name__ == "__main__":
-    checkpoint_dir = "../../CNN/checkpoints/"
+    checkpoint_dir = "../../CNN/Model_Weights_Logs/vgg19/"
     model_path = checkpoint_dir + "lowest_val_loss.pth"
     parameters = checkpoint_dir + "parameters.txt"
-    prediction_output_csv_dir = "../../CNN/checkpoints/"
+
     audiofile_annotations = "/home/student/Music/1/FYP/data/test_annotations.csv"
     audiofile_dir = "/home/student/Music/1/FYP/data/test/chunks"
 
     song_predictions_csv = inference_voting_multitrack(model_path=model_path,
-                                                       network_parameters=parameters,
-                                                       prediction_output_csv_dir=prediction_output_csv_dir,
+                                                       parameters=parameters,
+                                                       prediction_output_csv_dir=checkpoint_dir,
                                                        audiofile_dir=audiofile_dir,
                                                        audiofile_annotations=audiofile_annotations)
 

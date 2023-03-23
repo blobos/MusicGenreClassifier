@@ -4,11 +4,9 @@ import torch
 import torchaudio.transforms
 import pandas as pd
 from scipy.stats import mode
-from collections import Counter
-import csv
 
 sys.path.append("")
-from FYP.MusicGenreClassifier.CNN.cnn_vgg16 import CNNNetwork
+from FYP.MusicGenreClassifier.CNN.Models.cnn_vgg19_leaky_relu_batchnorm_dropout import CNNNetwork
 # from FYP.MusicGenreClassifier.CNN.train_with_validation_binary import SAMPLE_RATE, NUM_SAMPLES, N_FFT, HOP_LENGTH, N_MELS
 from datasetmelspecprep_for_multitrack import DatasetMelSpecPrep
 
@@ -63,13 +61,13 @@ def prediction_vote(group):
 
 # make sure predictions are probabilities instead of integer
 
-def inference_voting_multitrack(model_path, network_parameters, prediction_output_csv_dir, audiofile_dir,
+def inference_voting_multitrack(model_path, parameters, prediction_output_csv_dir, audiofile_dir,
                                 audiofile_annotations):
     if not os.path.exists(prediction_output_csv_dir + 'song_predictions.csv'):
         print('Creating:',  prediction_output_csv_dir + 'song_predictions.csv')
-        model_path = "../../CNN/checkpoints/lowest_val_loss.pth"
-        parameters = "../../CNN/checkpoints/parameters.txt"
-        prediction_output_csv_dir = "../../CNN/checkpoints/"
+        # model_path = "../../CNN/checkpoints/lowest_val_loss.pth"
+        # parameters = "../../CNN/checkpoints/parameters.txt"
+        # prediction_output_csv_dir = "../../CNN/checkpoints/"
 
         # Get audio sample parameters from parameters.txt for mel spectrogram transformations
         with open(parameters, "r") as f:
@@ -92,8 +90,8 @@ def inference_voting_multitrack(model_path, network_parameters, prediction_outpu
                 n_mels=N_MELS
             )
 
-            audiofile_annotations = "/home/student/Music/1/FYP/data/test_annotations.csv"
-            audiofile_dir = "/home/student/Music/1/FYP/data/test/chunks"
+            # audiofile_annotations = "/home/student/Music/1/FYP/data/test_annotations.csv"
+            # audiofile_dir = "/home/student/Music/1/FYP/data/test/chunks"
             cnn = CNNNetwork()
             state_dict = torch.load(model_path)
             cnn.load_state_dict(state_dict)
@@ -131,9 +129,9 @@ def inference_voting_multitrack(model_path, network_parameters, prediction_outpu
 if __name__ == "__main__":
 
     # Replace model_path and parameters.txt
-    model_path = "../../CNN/checkpoints/lowest_val_loss.pth"
-    parameters = "../../CNN/checkpoints/parameters.txt"
-    prediction_output_csv_dir = "../../CNN/checkpoints/"
+    checkpoint_dir = "../../CNN/Model_Weights_Logs/vgg19/"
+    model_path = checkpoint_dir + "lowest_val_loss.pth"
+    parameters = checkpoint_dir + "parameters.txt"
 
     # Get audio sample parameters from parameters.txt for mel spectrogram transformations
     with open(parameters, "r") as f:
@@ -173,7 +171,7 @@ if __name__ == "__main__":
     prediction2df(chunk_prediction_list, dmsp, cnn)
 
     chunk_predictions = pd.DataFrame(chunk_prediction_list, columns=['path', 'expected', 'prediction'])
-    chunk_predictions_csv_path = prediction_output_csv_dir + 'chunk_predictions.csv'
+    chunk_predictions_csv_path = checkpoint_dir + 'chunk_predictions.csv'
     chunk_predictions.to_csv(chunk_predictions_csv_path)
     print("df.head", chunk_predictions.head())
     grouped = chunk_predictions.groupby(chunk_predictions["path"].str[:-17]).apply(prediction_vote)
@@ -186,7 +184,7 @@ if __name__ == "__main__":
         final_predictions_list.append((group_name, group_expected, voted_prediction))
 
     pd.DataFrame(final_predictions_list, columns=['name', 'expected', 'prediction']).to_csv(
-        prediction_output_csv_dir + 'song_predictions.csv')
+        checkpoint_dir + 'song_predictions.csv')
     # Print the new list
     print(final_predictions_list)
 

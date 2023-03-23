@@ -92,8 +92,8 @@ class DatasetMelSpecPrep(Dataset):
 
 
 if __name__ == "__main__":
-    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
-    AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
+    ANNOTATIONS_FILE = "/FYP/data/train_annotations.csv"
+    AUDIO_DIR = "/FYP/data/train/chunks"
     SAMPLE_RATE = 22050
     NUM_SAMPLES = 22050
 

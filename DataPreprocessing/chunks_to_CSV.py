@@ -61,6 +61,6 @@ def chunks_to_CSV(chunk_directory, csv_path, labelled=True):
 
 
 if __name__ == "__main__":
-    chunk_directory = "/home/student/Music/1/FYP/data/mini/chunks"
-    csv_path = "/FYP/data/mini_annotations.csv"
+    chunk_directory = "/home/student/Music/1/FYP/data/train/chunks"
+    csv_path = "/home/student/Music/1/FYP/data/train_annotations.csv"
     chunks_to_CSV(chunk_directory, csv_path)

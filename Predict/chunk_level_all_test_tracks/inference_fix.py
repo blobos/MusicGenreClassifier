@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     # load back the model
     cnn = CNNNetwork()
-    state_dict = torch.load("/home/student/Music/1/FYP/MusicGenreClassifier/CNN/trained"
+    state_dict = torch.load("/FYP/MusicGenreClassifier/CNN/Model_Weights_Logs"
                             "/checkpoints_14_Epoch_no_val_improvement_in_10/lowest_val_loss.pth")
     cnn.load_state_dict(state_dict)
 

@@ -2,11 +2,9 @@ import os
 import sys
 import torch
 import torchaudio.transforms
-from collections import Counter
-import csv
 
 sys.path.append("")
-from FYP.MusicGenreClassifier.CNN.cnn_vgg16 import CNNNetwork
+from FYP.MusicGenreClassifier.CNN.Models.cnn_vgg16 import CNNNetwork
 # from FYP.MusicGenreClassifier.CNN.train_with_validation_binary import SAMPLE_RATE, NUM_SAMPLES, N_FFT, HOP_LENGTH, N_MELS
 from CNN.datasetmelspecprep import DatasetMelSpecPrep
 from DataPreprocessing.chunks_to_CSV import chunks_to_CSV
