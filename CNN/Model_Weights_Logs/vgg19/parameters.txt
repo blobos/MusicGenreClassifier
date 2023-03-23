@@ -1,0 +1,9 @@
+Parameters
+Batch size: 64
+Epochs: 200
+Learning rate: 0.0001
+Mel Spectrogram
+Sample rate: 44100
+n_fft(frequency resolution): 2048
+hop_length: 1024
+Mel bins(n_mels): 128
