@@ -1,5 +1,6 @@
 import os
 
+import numpy as np
 import torch
 import torchaudio
 import torch.nn.functional as F
@@ -15,19 +16,15 @@ from CRNN import CRNN
 from sklearn.metrics import accuracy_score
 
 
-
-
-
-# def create_data_loaders(train_data, batch_size):
-#     train_dataloader = DataLoader(train_data, batch_size=batch_size)
-#     return train_dataloader
-
+#CNN vs CRNN: CRNN requires target to be one hot
 
 def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
     progress_bar = tqdm(data_loader, desc='Training', unit='batch')
     # for input, target in data_loader:
     for input, target in progress_bar:
-        target =  F.one_hot(target, 12)
+        # print("target:", target.shape)
+        target = F.one_hot(target, 12)
+        # print("target one-hot:", target.shape)
         input, target = input.to(device), target.to(device)
 
         # calculate loss
@@ -47,7 +44,7 @@ def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
 
 def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience):
     highest_validation_accuracy = 0
-    lowest_training_loss =100
+    lowest_training_loss = 100
     lowest_validation_loss = 100
     val_wait = 0
     train_wait = 0
@@ -67,7 +64,7 @@ def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience)
         if train_loss < lowest_training_loss:
             train_wait = 0
         else:
-            train_wait +=1
+            train_wait += 1
             if train_wait == patience:
                 with open(CHECKPOINTS_DIR + "training_log.txt", "a") as f:
                     f.write(
@@ -115,6 +112,7 @@ def validate(model, data_loader, loss_fn, device):
     val_acc = 0.0
     with torch.no_grad():
         for input, target in data_loader:
+            target = F.one_hot(target, 12)
             input, target = input.to(device), target.to(device)
 
             prediction = model(input)
@@ -122,7 +120,13 @@ def validate(model, data_loader, loss_fn, device):
 
             # calculate accuracy
             _, predicted_classes = torch.max(prediction, dim=1)
-            val_acc += accuracy_score(target.cpu(), predicted_classes.cpu())
+            # print("target:", target.shape)
+            target = np.argmax(target.cpu(), axis=1)
+            # print("target:", target.shape)
+            # print(target)
+            # print("predicted:", predicted_classes.shape)
+            predicted_classes = np.argmax(predicted_classes.cpu(), axis=1)
+            val_acc += accuracy_score(target, predicted_classes)
 
     # average over the number of batches
     val_loss /= len(data_loader)
@@ -139,7 +143,7 @@ if __name__ == "__main__":
         os.makedirs(CHECKPOINTS_DIR)
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
-    # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_train_annotations.csv"
+    # ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/mini_annotations.csv"
     # AUDIO_DIR = "/home/student/Music/1/FYP/data/mini/chunks"
 
     if torch.cuda.is_available():

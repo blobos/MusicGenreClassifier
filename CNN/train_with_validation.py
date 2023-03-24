@@ -64,7 +64,7 @@ def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience)
         if train_loss < lowest_training_loss:
             train_wait = 0
         else:
-            train_wait +=1
+            train_wait += 1
             if train_wait == patience:
                 with open(CHECKPOINTS_DIR + "training_log.txt", "a") as f:
                     f.write(
@@ -111,6 +111,7 @@ def validate(model, data_loader, loss_fn, device):
     val_loss = 0.0
     val_acc = 0.0
     with torch.no_grad():
+        #TODO: add tqdm to this for loop (see train_single_epoch)
         for input, target in data_loader:
             input, target = input.to(device), target.to(device)
 
