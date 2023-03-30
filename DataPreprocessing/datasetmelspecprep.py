@@ -92,10 +92,10 @@ class DatasetMelSpecPrep(Dataset):
 
 
 if __name__ == "__main__":
-    ANNOTATIONS_FILE = "/FYP/data/train_annotations.csv"
-    AUDIO_DIR = "/FYP/data/train/chunks"
-    SAMPLE_RATE = 22050
-    NUM_SAMPLES = 22050
+    ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
+    AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
+    SAMPLE_RATE = 44100
+    NUM_SAMPLES = 1323000
 
     if torch.cuda.is_available():
         device = "cuda"
@@ -122,5 +122,5 @@ if __name__ == "__main__":
 
     print(f"There are {len(usd)} samples in the dataset.")
     signal, label = usd[0]
-    print(usd[0][1])
-    print(usd)
+    print(usd[0][0])
+    print(usd[0][0].size())

@@ -11,9 +11,12 @@ from tqdm import tqdm
 
 from FYP.MusicGenreClassifier.DataPreprocessing.datasetmelspecprep import DatasetMelSpecPrep
 # from cnn import CNNNetwork
-from CRNN import CRNN
+# from FYP.MusicGenreClassifier.CRNN.CRNN.CRNN import CRNN
 # from cnn_2 import CNNNetwork
+from FYP.MusicGenreClassifier.CRNN.CRNN_biLSTM import CRNN
 from sklearn.metrics import accuracy_score
+
+from torchsummary import summary
 
 
 #CNN vs CRNN: CRNN requires target to be one hot
@@ -66,7 +69,7 @@ def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience)
         else:
             train_wait += 1
             if train_wait == patience:
-                with open(CHECKPOINTS_DIR + "training_log.txt", "a") as f:
+                with open(CHECKPOINTS_DIR + "training_log.txt", "w") as f:
                     f.write(
                         f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
                         f"Stopping training after {patience} epochs without improvement in training loss"
@@ -147,16 +150,20 @@ if __name__ == "__main__":
     # AUDIO_DIR = "/home/student/Music/1/FYP/data/mini/chunks"
 
     if torch.cuda.is_available():
-        device = "cuda"
+        device = "cuda:1"
     else:
         device = "cpu"
         print(f"Using {device}")
 
     SAMPLE_RATE = 44100
-    NUM_SAMPLES = 44100
+    DURATION = 30
+    NUM_SAMPLES = 44100 * 30 # = 1323000
     N_FFT = 2048
     HOP_LENGTH = 1024
     N_MELS = 128
+    # NUM_FRAMES = 1 + (NUM_SAMPLES - N_FFT) // HOP_LENGTH
+    # (NUM_FRAMES, N_MELS) = (1 + (NUM_SAMPLES - N_FFT) // HOP_LENGTH, N_MELS)
+    # (NUM_FRAMES, N_MELS) = (1 + (1323000 - 2048) // 1024, 128) = (1292, 128)
 
     # instantiating our dataset object and create data loader
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
@@ -176,7 +183,7 @@ if __name__ == "__main__":
                               device,
                               labelled=True)
 
-    BATCH_SIZE = 64
+    BATCH_SIZE = 4
     EPOCHS = 200
     LEARNING_RATE = 0.0001
 
@@ -198,7 +205,9 @@ if __name__ == "__main__":
                 f"Sample rate: {SAMPLE_RATE}\n"
                 f"n_fft(frequency resolution): {N_FFT}\n"
                 f"hop_length: {HOP_LENGTH}\n"
-                f"Mel bins(n_mels): {N_MELS}\n")
+                f"Mel bins(n_mels): {N_MELS}\n"
+                f"Network:\n {cnn}"
+                )
 
     # initialise loss function + optimiser
     loss_fn = nn.CrossEntropyLoss()
