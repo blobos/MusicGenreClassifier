@@ -82,7 +82,7 @@ def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience)
         else:
             val_wait += 1
             if val_wait == patience:
-                with open(CHECKPOINTS_DIR + "training_log.txt", "a") as f:
+                with open(CHECKPOINTS_DIR + "training_log.txt", "w") as f:
                     f.write(
                         f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
                         f"Stopping training after {patience} epochs without improvement in validation loss"
