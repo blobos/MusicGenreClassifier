@@ -74,6 +74,7 @@ class MainWindow(QWidget):
 
 #TODO:
 #display mel spectrogram and waveform after loading audio file
+    # https://ask.csdn.net/questions/7543071
     def display_mel_spectrogram(self):
         y, sr = librosa.load(self.file_path, sr=22050)
         S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
