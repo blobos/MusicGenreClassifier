@@ -95,7 +95,7 @@ if __name__ == "__main__":
     ANNOTATIONS_FILE = "/home/student/Music/1/FYP/data/train_annotations.csv"
     AUDIO_DIR = "/home/student/Music/1/FYP/data/train/chunks"
     SAMPLE_RATE = 44100
-    NUM_SAMPLES = 1323000
+    NUM_SAMPLES = 1323000 #44.1khz * 30 sec
 
     if torch.cuda.is_available():
         device = "cuda"
