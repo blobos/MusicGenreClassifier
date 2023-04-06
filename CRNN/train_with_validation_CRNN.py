@@ -121,6 +121,7 @@ def validate(model, data_loader, loss_fn, device):
         for input, target in tqdm(data_loader, total=len(data_loader)):
             progress_bar = tqdm(data_loader, desc='Validation', unit='batch')
             target = F.one_hot(target, 12)
+            target = target.float()
             input, target = input.to(device), target.to(device)
 
             prediction = model(input)
