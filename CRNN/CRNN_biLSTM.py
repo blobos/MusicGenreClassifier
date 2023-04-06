@@ -5,13 +5,13 @@ from torchsummary import summary
 # Define the audio processing parameters
 sr = 44100
 duration = 30
-hop_length = 512
-n_fft = 1024
-n_mels = 64
+n_fft = 2048
+hop_length = n_fft/2
+n_mels = 128
 n_frames = 1 + int((sr * duration - n_fft + hop_length) / hop_length) # number of frames(i.e. Length)
 
 
-class CRNN(nn.Module):
+class NetworkModel(nn.Module):
     def __init__(self):
         super().__init__()  # ????
         self.conv1 = nn.Sequential(
@@ -49,8 +49,8 @@ class CRNN(nn.Module):
 
         self.flatten = nn.Flatten(start_dim=2, end_dim=3)
 
-        # self.reshape = torch.reshape()
-        #TODO: variable input size = x.flatten[2] == x.permute.size(2) * x.permute.size(3)) ==
+
+        #variable input size = x.flatten[2] == x.permute.size(2) * x.permute.size(3)) ==
 
         self.lstm = nn.LSTM(input_size=21248, hidden_size=1024, num_layers=2, bidirectional=True,
                              batch_first= True)
@@ -95,9 +95,9 @@ class CRNN(nn.Module):
 
         #(D*num_layers, Batch, H(out))
         #D = 2 if Bidirectional, else 1
-        # h_0 = torch.zeros(2, x.size(0), 1024).requires_grad_().to('cuda')
+        # h_0 = torch.zeros(2, x.size(0), 1024).requires_grad_().to('cuda') #hidden state
         # print("h_0:", h_0.size())
-        # c_0 = torch.zeros(2, x.size(0), 1024).requires_grad_().to('cuda')
+        # c_0 = torch.zeros(2, x.size(0), 1024).requires_grad_().to('cuda') #cell state
         #for LSTM, input=(Batch,Length,Hidden(input)) when batch_first=True
         # x, _ = self.lstm1(x, (h_0, c_0)) #Defaults to zeros if (h_0, c_0) is not provided.
         # x, (h_n, c_n) = self.lstm(x)
@@ -106,10 +106,15 @@ class CRNN(nn.Module):
         # print("x:", x.size(), "h_n:", h_n.size(), "c_n:", c_n.size())
         # x, _ = self.lstm(x, (h_n, c_n))
         # print("lstm:", x.shape)
-        x = self.global_avg_pool(x)
         # print("lstm:", type(x), x.shape)
         # print("lstm:", np.shape(x))
+        x = self.global_avg_pool(x)
+        # print(x.size())
+        x = x[:, -1, :] #discard previous sequences of many-to-many to get many-to-one
+        # print(x.size())
+        # print(x)
         logits = self.dense(x)
+        # print(x)
         predictions = logits
         return predictions
 
@@ -129,5 +134,7 @@ if __name__ == "__main__":
     #
     # print("Device name? ", torch.cuda.get_device_name(torch.cuda.current_device()))
 
-    crnn = CRNN().cuda()
-    summary(crnn, (1, 64, 1292))# mel spectrogram dim (ch, freq axis(mel bins), time axis)
+    crnn = NetworkModel().cuda()
+    input_size = (1, n_mels, n_frames)
+    print(input_size)
+    summary(crnn, (1, n_mels, n_frames))# mel spectrogram dim (ch, freq axis(mel bins), time axis)
