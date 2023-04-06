@@ -11,9 +11,8 @@ from tqdm import tqdm
 
 from FYP.MusicGenreClassifier.DataPreprocessing.datasetmelspecprep import DatasetMelSpecPrep
 # from cnn import CNNNetwork
-# from FYP.MusicGenreClassifier.CRNN.CRNN.CRNN import CRNN
-# from cnn_2 import CNNNetwork
-from FYP.MusicGenreClassifier.CRNN.CRNN_biLSTM import CRNN
+# from FYP.MusicGenreClassifier.CRNN.CRNN.CRNN import NetworkModel
+from FYP.MusicGenreClassifier.CRNN.CRNN_biLSTM import NetworkModel
 from sklearn.metrics import accuracy_score
 
 from torchsummary import summary
@@ -25,9 +24,14 @@ def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
     progress_bar = tqdm(data_loader, desc='Training', unit='batch')
     # for input, target in data_loader:
     for input, target in progress_bar:
-        # print("target:", target.shape)
+        # print("input:", input)
+        # print("input shape:", input.shape, "type:", type(target))
+        # print("target:", target)
+        # print("target shape:", target.shape, "type:", type(target))
         target = F.one_hot(target, 12)
-        # print("target one-hot:", target.shape)
+        target = target.float()
+        # print("target one-hot:", target)
+        # print("target one-hot shape:", target.shape, "type:", type(target))
         input, target = input.to(device), target.to(device)
 
         # calculate loss
@@ -114,7 +118,8 @@ def validate(model, data_loader, loss_fn, device):
     val_loss = 0.0
     val_acc = 0.0
     with torch.no_grad():
-        for input, target in data_loader:
+        for input, target in tqdm(data_loader, total=len(data_loader)):
+            progress_bar = tqdm(data_loader, desc='Validation', unit='batch')
             target = F.one_hot(target, 12)
             input, target = input.to(device), target.to(device)
 
@@ -186,13 +191,14 @@ if __name__ == "__main__":
     BATCH_SIZE = 4
     EPOCHS = 200
     LEARNING_RATE = 0.0001
+    PATIENCE = 50
 
     train_data, val_data = random_split(dmsp, [len(dmsp) - int(0.2 * len(dmsp)), int(0.2 * len(dmsp))])
     train_dataloader = DataLoader(train_data, BATCH_SIZE)
     val_dataloader = DataLoader(val_data, BATCH_SIZE, shuffle=True)
 
     # construct model and assign it to device
-    cnn = CRNN().to(device)
+    cnn = NetworkModel().to(device)
     # cnn = CNNNetwork1().to(device)
     print(cnn)
 
@@ -200,9 +206,11 @@ if __name__ == "__main__":
         f.write("Parameters\n"
                 f"Batch size: {BATCH_SIZE}\n"
                 f"Epochs: {EPOCHS}\n"
+                f"Patience: {PATIENCE}\n"
                 f"Learning rate: {LEARNING_RATE}\n"
-                "Mel Spectrogram\n"
+                "Mel Spectrogram:\n"
                 f"Sample rate: {SAMPLE_RATE}\n"
+                f"Number of samples: {NUM_SAMPLES}\n"
                 f"n_fft(frequency resolution): {N_FFT}\n"
                 f"hop_length: {HOP_LENGTH}\n"
                 f"Mel bins(n_mels): {N_MELS}\n"
@@ -215,4 +223,4 @@ if __name__ == "__main__":
                                  lr=LEARNING_RATE)
 
     # train model
-    train(cnn, train_dataloader, loss_fn, optimizer, device, EPOCHS, patience=50)
+    train(cnn, train_dataloader, loss_fn, optimizer, device, EPOCHS, patience=PATIENCE)
