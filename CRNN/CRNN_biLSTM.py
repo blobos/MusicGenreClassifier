@@ -2,6 +2,11 @@ import torch
 import torch.nn as nn
 from torchsummary import summary
 
+m = nn.AdaptiveAvgPool1d(5)
+input = torch.randn(1, 64, 8)
+output = m(input)
+print(output.size())
+
 # Define the audio processing parameters
 sr = 44100
 duration = 30
@@ -17,33 +22,33 @@ class NetworkModel(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(
                 in_channels=1,  # since downsampled2mono
-                out_channels=32,  # 32 filters
+                out_channels=16,  # 32 filters
                 kernel_size=3,
                 stride=1,
-                padding=2
+                padding=1
             ),
+            nn.LeakyReLU(0.1),
+            nn.InstanceNorm2d(16),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
             nn.LeakyReLU(0.1),
             nn.InstanceNorm2d(32),
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
-        self.conv2 = nn.Sequential(
-            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=2),
-            nn.LeakyReLU(0.1),
-            nn.InstanceNorm2d(64),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-        )
         self.conv3 = nn.Sequential(
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=2),
+            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
             nn.LeakyReLU(0.1),
             nn.InstanceNorm2d(128),
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
         self.conv4 = nn.Sequential(
-            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=2),
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
             nn.LeakyReLU(0.1),
-            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=2),
+            nn.Conv2d(128, 128, kernel_size=3, stride=1, padding=1),
             nn.LeakyReLU(0.1),
-            nn.InstanceNorm2d(256),
+            nn.InstanceNorm2d(128),
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
@@ -52,11 +57,13 @@ class NetworkModel(nn.Module):
 
         #variable input size = x.flatten[2] == x.permute.size(2) * x.permute.size(3)) ==
 
-        self.lstm = nn.LSTM(input_size=21248, hidden_size=1024, num_layers=2, bidirectional=True,
+        self.lstm = nn.LSTM(input_size=10240, hidden_size=1024, num_layers=3, bidirectional=True,
                              batch_first= True)
 
 
-        self.global_avg_pool = nn.AvgPool2d(kernel_size=2)
+        self.adaptive_avg_pool = nn.AdaptiveAvgPool1d((2048)) #1D not 2D since [Batch, C, Length] not [B, C, H, W]
+        # self.adaptive_avg_pool = nn.AdaptiveAvgPool2d(output_size=(1, 1))
+        # self.global_avg_pool = nn.AvgPool2d(kernel_size=2)
         # self.lstm2 = nn.
         # self.lstm = nn.Sequential(
         #     nn.LSTM(input_size=20 * n_mels, hidden_size=1024, num_layers=1, batch_first=True),
@@ -65,7 +72,7 @@ class NetworkModel(nn.Module):
         # )
 
         self.dense = nn.Sequential(
-            nn.Linear(in_features=1024, out_features=1024),
+            nn.Linear(in_features=16384, out_features=1024),
             nn.ReLU(True),
             nn.Dropout(),
             nn.Linear(1024, 12)
@@ -82,7 +89,7 @@ class NetworkModel(nn.Module):
         x = self.conv3(x)
         # print(x.shape)
         x = self.conv4(x)
-        # print("conv4:", x.shape)
+        print("conv4:", x.shape)
         # print(type(x))
         x = torch.permute(x, (0, 2, 1, 3))
         # print("permute:", x.shape)
@@ -105,15 +112,21 @@ class NetworkModel(nn.Module):
         #lstm output =  output, (h_n, c_n)
         # print("x:", x.size(), "h_n:", h_n.size(), "c_n:", c_n.size())
         # x, _ = self.lstm(x, (h_n, c_n))
-        # print("lstm:", x.shape)
+        print("lstm:", x.shape)
         # print("lstm:", type(x), x.shape)
         # print("lstm:", np.shape(x))
-        x = self.global_avg_pool(x)
-        # print(x.size())
-        x = x[:, -1, :] #discard previous sequences of many-to-many to get many-to-one
+        # x =x.transpose(1, 2) # swap 2nd and 3rd(features) dim, since avg pool is on second dimension
+        # print("transpose:", x.shape)
+        # x = self.adaptive_avg_pool(x).squeeze() #remove middle dimension
+        x = self.adaptive_avg_pool(x)
+        print("pooling:", x.size())
+        x = x.view(x.size(0), -1)
+        print("pool collapsed:", x.size())
+        # x = x[:, -1, :] #get last element to get many-to-many to get many-to-one
         # print(x.size())
         # print(x)
         logits = self.dense(x)
+        print(logits.size())
         # print(x)
         predictions = logits
         return predictions
@@ -136,5 +149,5 @@ if __name__ == "__main__":
 
     crnn = NetworkModel().cuda()
     input_size = (1, n_mels, n_frames)
-    print(input_size)
+    print("input:", input_size)
     summary(crnn, (1, n_mels, n_frames))# mel spectrogram dim (ch, freq axis(mel bins), time axis)
