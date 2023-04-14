@@ -2,11 +2,6 @@ import torch
 import torch.nn as nn
 from torchsummary import summary
 
-m = nn.AdaptiveAvgPool1d(5)
-input = torch.randn(1, 64, 8)
-output = m(input)
-print(output.size())
-
 # Define the audio processing parameters
 sr = 44100
 duration = 30
@@ -61,7 +56,7 @@ class NetworkModel(nn.Module):
                              batch_first= True)
 
 
-        self.adaptive_avg_pool = nn.AdaptiveAvgPool1d((2048)) #1D not 2D since [Batch, C, Length] not [B, C, H, W]
+        self.adaptive_avg_pool = nn.AdaptiveAvgPool1d((1)) #1D not 2D since [Batch, C, Length] not [B, C, H, W]
         # self.adaptive_avg_pool = nn.AdaptiveAvgPool2d(output_size=(1, 1))
         # self.global_avg_pool = nn.AvgPool2d(kernel_size=2)
         # self.lstm2 = nn.
@@ -72,7 +67,7 @@ class NetworkModel(nn.Module):
         # )
 
         self.dense = nn.Sequential(
-            nn.Linear(in_features=16384, out_features=1024),
+            nn.Linear(in_features=2048, out_features=1024),
             nn.ReLU(True),
             nn.Dropout(),
             nn.Linear(1024, 12)
@@ -89,7 +84,7 @@ class NetworkModel(nn.Module):
         x = self.conv3(x)
         # print(x.shape)
         x = self.conv4(x)
-        print("conv4:", x.shape)
+        # print("conv4:", x.shape)
         # print(type(x))
         x = torch.permute(x, (0, 2, 1, 3))
         # print("permute:", x.shape)
@@ -112,21 +107,23 @@ class NetworkModel(nn.Module):
         #lstm output =  output, (h_n, c_n)
         # print("x:", x.size(), "h_n:", h_n.size(), "c_n:", c_n.size())
         # x, _ = self.lstm(x, (h_n, c_n))
-        print("lstm:", x.shape)
+        # print("lstm:", x.shape)
         # print("lstm:", type(x), x.shape)
         # print("lstm:", np.shape(x))
-        # x =x.transpose(1, 2) # swap 2nd and 3rd(features) dim, since avg pool is on second dimension
+        x =x.transpose(1, 2) # swap 2nd and 3rd(features) dim, since avg pool is on second dimension
         # print("transpose:", x.shape)
-        # x = self.adaptive_avg_pool(x).squeeze() #remove middle dimension
-        x = self.adaptive_avg_pool(x)
-        print("pooling:", x.size())
-        x = x.view(x.size(0), -1)
-        print("pool collapsed:", x.size())
+        x = self.adaptive_avg_pool(x).squeeze() #remove middle dimension
+
+        # print("pooling:", x.size())
+        # x = self.adaptive_avg_pool(x)
+        # x = x.view(x.size(0), -1)
+        # print("pool collapsed:", x.size())
+
         # x = x[:, -1, :] #get last element to get many-to-many to get many-to-one
         # print(x.size())
         # print(x)
         logits = self.dense(x)
-        print(logits.size())
+        # print(logits.size())
         # print(x)
         predictions = logits
         return predictions
