@@ -1,5 +1,7 @@
-VGG19:
-![song level prediction_confusion_matrix_voting_max_val_acc.png](CNN%2FModel_Weights_Logs%2Fvgg19%2Fsong%20level%20prediction_confusion_matrix_voting_max_val_acc.png)
+CRNN:
+![song level prediction_confusion_matrix_voting.png](CRNN%2FCRNN_39%2Fprediction%20reports%2Fsong%20level%20prediction_confusion_matrix_voting.png)
+in progress:
+fixing training/cm scripts
 To do:  
 1. class imbalance -> A. Reduce or B. penalize when smaller genres predicted as major and vice versa.
    (first remove 21.05khz sr)
