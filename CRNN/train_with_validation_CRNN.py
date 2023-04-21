@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from FYP.MusicGenreClassifier.DataPreprocessing.datasetmelspecprep import DatasetMelSpecPrep
 # from cnn import CNNNetwork
-# from FYP.MusicGenreClassifier.CRNN.CRNN.CRNN import NetworkModel
+# from FYP.MusicGenreClassifier.CRNN.CRNN_39.CRNN_biLSTM import NetworkModel
 from FYP.MusicGenreClassifier.CRNN.CRNN_biLSTM import NetworkModel
 from sklearn.metrics import accuracy_score
 
@@ -36,7 +36,23 @@ def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
 
         # calculate loss
         prediction = model(input)
+        # print("target:", target)
+        # print("prediction:", prediction)
+        # print("predictions:", prediction)
+        # print("prediction shape: ", prediction.shape)
+        # print(prediction.ndim)
+        if prediction.ndim < 2:
+            prediction = prediction.unsqueeze(0)
+        #
+        # prediction = torch.argmax(prediction, dim=1)
+        # print("prediction", prediction)
+        # print("prediction shape: ", prediction.shape)
+        # print("target:", target)
+        # target = torch.argmax(target, dim=1)
+        # print("target:", target)
         loss = loss_fn(prediction, target)
+
+
 
         # backpropagate error and update weights
         optimiser.zero_grad()
@@ -125,6 +141,8 @@ def validate(model, data_loader, loss_fn, device):
             input, target = input.to(device), target.to(device)
 
             prediction = model(input)
+            print("predictions:", prediction)
+            print(torch.max(prediction, dim=1))
             val_loss += loss_fn(prediction, target).item()
 
             # calculate accuracy
@@ -133,8 +151,11 @@ def validate(model, data_loader, loss_fn, device):
             target = np.argmax(target.cpu(), axis=1)
             # print("target:", target.shape)
             # print(target)
-            # print("predicted:", predicted_classes.shape)
-            predicted_classes = np.argmax(predicted_classes.cpu(), axis=1)
+            predicted_classes = predicted_classes.cpu()
+            print("predicted_classes:", predicted_classes, predicted_classes.shape)
+            print("target:", target, target.shape)
+            # predicted_classes = np.argmax(predicted_classes.cpu(), axis=1)
+
             val_acc += accuracy_score(target, predicted_classes)
 
     # average over the number of batches
