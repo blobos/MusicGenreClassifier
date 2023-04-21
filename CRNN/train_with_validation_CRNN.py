@@ -69,8 +69,8 @@ def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience)
     highest_validation_accuracy = 0
     lowest_training_loss = 100
     lowest_validation_loss = 100
-    val_wait = 0
-    train_wait = 0
+    wait = 0
+    wait = 0
     for i in range(epochs):
         print(f"Epoch {i + 1}")
         train_loss = train_single_epoch(model, train_dataloader, loss_fn, optimiser, device)
@@ -85,10 +85,10 @@ def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience)
             highest_validation_accuracy = val_acc
             print(f"Highest Validation Accuracy")
         if train_loss < lowest_training_loss:
-            train_wait = 0
+            wait = 0
         else:
-            train_wait += 1
-            if train_wait == patience:
+            wait += 1
+            if wait == patience:
                 with open(CHECKPOINTS_DIR + "training_log.txt", "w") as f:
                     f.write(
                         f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
@@ -101,10 +101,10 @@ def train(model, train_dataloader, loss_fn, optimiser, device, epochs, patience)
             torch.save(cnn.state_dict(), CHECKPOINTS_DIR + "lowest_val_loss.pth")
             lowest_validation_loss = val_loss
             print(f"Lowest Validation Loss")
-            val_wait = 0
+            wait = 0
         else:
-            val_wait += 1
-            if val_wait == patience:
+            wait += 1
+            if wait == patience:
                 with open(CHECKPOINTS_DIR + "training_log.txt", "a") as f:
                     f.write(
                         f"Epoch {i + 1}, Training Loss: {train_loss}, Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}: "
@@ -134,29 +134,32 @@ def validate(model, data_loader, loss_fn, device):
     val_loss = 0.0
     val_acc = 0.0
     with torch.no_grad():
-        for input, target in tqdm(data_loader, total=len(data_loader)):
-            progress_bar = tqdm(data_loader, desc='Validation', unit='batch')
+        for input, target in tqdm(data_loader, total=len(data_loader), desc='Validation', unit='batch'):
             target = F.one_hot(target, 12)
             target = target.float()
             input, target = input.to(device), target.to(device)
 
             prediction = model(input)
-            print("predictions:", prediction)
-            print(torch.max(prediction, dim=1))
+            # print("predictions:", prediction)
+            # print(torch.max(prediction, dim=1))
+            if prediction.ndim < 2:
+                prediction = prediction.unsqueeze(0)
             val_loss += loss_fn(prediction, target).item()
 
             # calculate accuracy
-            _, predicted_classes = torch.max(prediction, dim=1)
-            # print("target:", target.shape)
-            target = np.argmax(target.cpu(), axis=1)
+            predicted_classes = torch.nn.functional.one_hot(torch.argmax(prediction, dim=1), num_classes=12).float()
+            # print("target:",target, target.shape)
+            # print("prediction:", prediction, prediction.shape)
+            # target = np.argmax(target.cpu(), axis=1)
             # print("target:", target.shape)
             # print(target)
             predicted_classes = predicted_classes.cpu()
-            print("predicted_classes:", predicted_classes, predicted_classes.shape)
-            print("target:", target, target.shape)
+            # print("predicted_classes:", predicted_classes, predicted_classes.shape)
+            # print("target:", target, target.shape)
             # predicted_classes = np.argmax(predicted_classes.cpu(), axis=1)
 
-            val_acc += accuracy_score(target, predicted_classes)
+            # val_acc += accuracy_score(target, predicted_classes)
+            val_acc += accuracy_score(target.cpu(), predicted_classes)
 
     # average over the number of batches
     val_loss /= len(data_loader)
@@ -211,7 +214,7 @@ if __name__ == "__main__":
                               labelled=True)
 
     BATCH_SIZE = 4
-    EPOCHS = 200
+    EPOCHS = 2
     LEARNING_RATE = 0.0001
     PATIENCE = 50
 
