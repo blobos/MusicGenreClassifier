@@ -238,9 +238,14 @@ if __name__ == "__main__":
                               labelled=True)
 
     BATCH_SIZE = 8
-    EPOCHS = 3
+    EPOCHS = 200
     LEARNING_RATE = 0.0001
     PATIENCE = 50
+
+    # print(f"There are {len(dmsp)} samples in the dataset.")
+    # signal, label = dmsp[0]
+    # print(dmsp[0][0])
+    # print(dmsp[0][0].size())
 
     train_data, val_data = random_split(dmsp, [len(dmsp) - int(0.2 * len(dmsp)), int(0.2 * len(dmsp))])
     train_dataloader = DataLoader(train_data, BATCH_SIZE)
