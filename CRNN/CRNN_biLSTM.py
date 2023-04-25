@@ -52,7 +52,7 @@ class NetworkModel(nn.Module):
 
         #variable input size = x.flatten[2] == x.permute.size(2) * x.permute.size(3)) ==
 
-        self.lstm = nn.LSTM(input_size=10240, hidden_size=1024, num_layers=3, bidirectional=True,
+        self.lstm = nn.LSTM(input_size=1024, hidden_size=1024, num_layers=3, bidirectional=True,
                              batch_first= True)
 
 
@@ -77,7 +77,7 @@ class NetworkModel(nn.Module):
 
     def forward(self, input_data):
         # print("input:", input_data.shape)
-        x = self.conv1(input_data)
+        x = self.conv1(input_data) #batch, channel, freq, time steps
         # print("conv1:", x.shape)
         x = self.conv2(x)
         # print(x.shape)
@@ -86,7 +86,7 @@ class NetworkModel(nn.Module):
         x = self.conv4(x)
         # print("conv4:", x.shape)
         # print(type(x))
-        x = torch.permute(x, (0, 2, 1, 3))
+        x = torch.permute(x, (0, 3, 2, 1))#batch, time steps, freq, channel
         # print("permute:", x.shape)
         # print(type(x))
         # print("flattened=", x.size(0), x.size(1), x.size(2)*x.size(3))
