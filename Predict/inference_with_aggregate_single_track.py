@@ -2,9 +2,12 @@ import os
 import sys
 import torch
 import torchaudio.transforms
+from tqdm import tqdm
+from collections import Counter
 
 sys.path.append("")
-from FYP.MusicGenreClassifier.CNN.Models.cnn_vgg19_leaky_relu_batchnorm_dropout import CNNNetwork
+# from FYP.MusicGenreClassifier.CNN.Models.cnn_vgg19_leaky_relu_batchnorm_dropout import CNNNetwork
+from FYP.MusicGenreClassifier.CRNN.CRNN_test.CRNN_biLSTM import NetworkModel
 from FYP.MusicGenreClassifier.DataPreprocessing.datasetmelspecprep import DatasetMelSpecPrep
 from FYP.MusicGenreClassifier.DataPreprocessing.chunks_to_CSV import chunks_to_CSV
 from FYP.MusicGenreClassifier.DataPreprocessing.track_to_chunks_single import split_audio
@@ -48,37 +51,39 @@ def file_prep(file, output_directory='./single_track'):
 
 def predict(model, input):
     # print("prediction for ")
+    # print("input", input)
     model.eval()
     with torch.no_grad():
         predictions = model(input[0].unsqueeze_(0))
+        # print("prediction:", predictions)
         # Tensor (1, 10) -> [ [0.1, 0.01, ..., 0.6] ]
-
-        # print(predictions[0])
-
-        path = input[1]
-    return predictions[0]
+    return predictions
 
 
 def predict_vote(dmsp):
     predictions = []
-    i = 0
-    for i in range(0, len(dmsp)):
+
+    progress_bar = tqdm(dmsp, desc="Predicting", unit='chunks')
+    for input in progress_bar:
         # print("chunk #:", i)
-        input = dmsp[i]
-        cnn = CNNNetwork()
-        predicted = predict(cnn, input)
-        print("chunk prediction:", predicted)
+        # input = dmsp[i]
+        networkModel = NetworkModel()
+        predicted = predict(networkModel, input)
+        # print(predicted)
         # get index of arg max
         # add to prediction list
         # get highest occurence
         # get classmapping
-        predictions.append(predicted.argmax(0))
-        i += 1
-    print(predictions)
-    final_prediction = class_mapping[max(predictions, key=predictions.count)]
+        predictions.append(class_mapping[predicted.argmax(0)])
+        # i += 1
 
-    print("final class prediction:", final_prediction, "second most common:")#, second_most_common )
-    return(final_prediction)
+    top_predictions = Counter(predictions).most_common(3)
+    for i in range(len(top_predictions)):
+        top_predictions[i] = top_predictions[i][0].split("_")[0]
+        top_predictions[i] = top_predictions[i][0].capitalize() + top_predictions[i][1:]
+
+    print("final class prediction:", top_predictions[0], top_predictions[1], top_predictions[2])
+    return(top_predictions[0], top_predictions[1], top_predictions[2])
 
 
 
@@ -91,11 +96,11 @@ def combined(file_path, model_dir):
 
     with open(parameters, "r") as f:
         line = f.readlines()
-        SAMPLE_RATE = int(line[5].split()[-1])
-        NUM_SAMPLES = SAMPLE_RATE
-        N_FFT = int(line[6].split()[-1])
-        HOP_LENGTH = int(line[7].split()[-1])
-        N_MELS = int(line[8].split()[-1])
+        SAMPLE_RATE = int(line[6].split()[-1])
+        NUM_SAMPLES = int(line[7].split()[-1])
+        N_FFT = int(line[8].split()[-1])
+        HOP_LENGTH = int(line[9].split()[-1])
+        N_MELS = int(line[10].split()[-1])
         # print(f"Sample Rate: {SAMPLE_RATE}\n"
         #       f"N_FFT: {N_FFT}\n"
         #       f"Hop length: {HOP_LENGTH}\n"
@@ -103,9 +108,9 @@ def combined(file_path, model_dir):
 
     ANNOTATIONS_FILE = csv_path
     AUDIO_DIR = test_directory
-    cnn = CNNNetwork()
+    networkModel = NetworkModel()
     state_dict = torch.load(model_path)
-    cnn.load_state_dict(state_dict)
+    networkModel.load_state_dict(state_dict)
 
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
         sample_rate=SAMPLE_RATE,
@@ -121,12 +126,12 @@ def combined(file_path, model_dir):
                               NUM_SAMPLES,
                               "cpu",
                               labelled=False)
-    return predict_vote(dmsp)
-#TODO returning different predictions each time
+    prediction = predict_vote(dmsp)
+    return prediction
 
 if __name__ == "__main__":
-    file_path = "/home/student/Music/1/FYP/MusicGenreClassifier/Predict/TEST005_death_metal_03. Unholy Prophecies.mp3"
-    model_dir = "/home/student/Music/1/FYP/MusicGenreClassifier/CNN/Model_Weights_Logs/vgg19/"
+    file_path = "/home/student/Music/1/FYP/data/test/testing/learned_subgenres/synthwave_electronic/018_synthwave_electronic_018_house_electronic_09 - Last Dance XX.mp3"
+    model_dir = "/home/student/Music/1/FYP/MusicGenreClassifier/CRNN/CRNN_test/"
     combined(file_path, model_dir)
 
     # test_directory, csv_path = file_prep(
