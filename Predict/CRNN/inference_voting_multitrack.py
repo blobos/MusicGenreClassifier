@@ -157,7 +157,7 @@ if __name__ == "__main__":
         HOP_LENGTH = int(line[9].split()[-1])
         N_MELS = int(line[10].split()[-1])
         print(f"Sample Rate: {SAMPLE_RATE}\n"
-              f"Number of samples: {NUM_SAMPLES}"
+              f"Number of samples: {NUM_SAMPLES}\n"
               f"N_FFT: {N_FFT}\n"
               f"Hop length: {HOP_LENGTH}\n"
               f"N_MELS: {N_MELS}")
