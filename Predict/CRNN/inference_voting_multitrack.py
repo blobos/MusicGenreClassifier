@@ -67,8 +67,7 @@ def prediction2df(predict_list, dmsp, network_model):
 
 def prediction_vote(group):
     # Use the mode function to vote for the prediction
-    #todo: comment why [0][0]
-    voted_prediction = mode(group["prediction"])[0][0]
+    voted_prediction = mode(group["prediction"])[0]
     return voted_prediction
 
 

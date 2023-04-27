@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     #load track
     #For loop trackID or track chunk count
-    # for track in usd[]:
+    # for track in dmsp[]:
     input = usd[1][0]  # tensor is 3 dim, but we need 4 since batch_size --> [batch_size , num_channels, fr, time]
     print(usd[1])
     print(usd[1][0])

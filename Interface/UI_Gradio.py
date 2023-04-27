@@ -171,4 +171,4 @@ def combined(audio_file, model_dir="/home/student/Music/1/FYP/MusicGenreClassifi
 
 
 interface = gr.Interface(fn=combined, inputs="audio", outputs=["label", "label", "label"])
-interface.launch()
+interface.launch(share=True)

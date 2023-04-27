@@ -110,17 +110,17 @@ if __name__ == "__main__":
         n_mels=64
     )
 
-    usd = DatasetMelSpecPrep(ANNOTATIONS_FILE,
-                             AUDIO_DIR,
-                             mel_spectrogram,
-                             SAMPLE_RATE,
-                             NUM_SAMPLES,
-                             device,
-                             labelled=True)
+    dmsp = DatasetMelSpecPrep(ANNOTATIONS_FILE,
+                              AUDIO_DIR,
+                              mel_spectrogram,
+                              SAMPLE_RATE,
+                              NUM_SAMPLES,
+                              device,
+                              labelled=True)
     # broken when labelled = False
 
 
-    print(f"There are {len(usd)} samples in the dataset.")
-    signal, label = usd[0]
-    print(usd[0][0])
-    print(usd[0][0].size())
+    print(f"There are {len(dmsp)} samples in the dataset.")
+    # signal, label = dmsp[0]
+    # print(dmsp[0][0])
+    # print(dmsp[0][0].size())

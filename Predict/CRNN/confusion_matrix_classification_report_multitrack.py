@@ -24,8 +24,8 @@ class_mapping = [
 ]
 
 if __name__ == "__main__":
-    checkpoint_dir = "../../CRNN/CRNN/"
-    model_path = checkpoint_dir + "lowest_val_loss.pth"
+    checkpoint_dir = "../../CRNN/checkpoints/"
+    model_path = checkpoint_dir + "latest.pth"
     parameters = checkpoint_dir + "parameters.txt"
 
     audiofile_annotations = "/home/student/Music/1/FYP/data/test_annotations.csv"

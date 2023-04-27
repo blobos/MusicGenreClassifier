@@ -8,11 +8,11 @@ duration = 30
 hop_length = 512
 n_fft = 1024
 n_mels = 64
-fmax = 8000
-n_frames = 1 + int((sr * duration - n_fft + hop_length) / hop_length)
+# fmax = 8000
+# n_frames = 1 + int((sr * duration - n_fft + hop_length) / hop_length)
 
 
-class CRNN(nn.Module):
+class NetworkModel(nn.Module):
     def __init__(self):
         super().__init__()  # ????
         self.conv1 = nn.Sequential(
@@ -76,22 +76,22 @@ class CRNN(nn.Module):
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, input_data):
-        # print(input_data.shape)
+        print("input:", input_data.shape)
         x = self.conv1(input_data)
-        # print(x.shape)
+        print(x.shape)
         x = self.conv2(x)
-        # print(x.shape)
+        print(x.shape)
         x = self.conv3(x)
-        # print(x.shape)
+        print(x.shape)
         x = self.conv4(x)
-        # print("conv4:", x.shape)
+        print("conv4:", x.shape)
         # print(type(x))
         x = torch.permute(x, (0, 2, 1, 3))
-        # print("permute:", x.shape)
+        print("permute:", x.shape)
         # print(type(x))
         x = self.flatten(x)
         # print(x)
-        # print("flatten:", x.size())
+        print("flatten:", x.size())
         # print(type(x))
         h0 = torch.zeros(1, x.size(0), 1024).requires_grad_().to('cuda')
         c0 = torch.zeros(1, x.size(0), 1024).requires_grad_().to('cuda')
@@ -118,5 +118,5 @@ if __name__ == "__main__":
     #
     # print("Device name? ", torch.cuda.get_device_name(torch.cuda.current_device()))
 
-    crnn = CRNN().cuda()
+    crnn = NetworkModel().cuda()
     summary(crnn, (1, 128, 44))
