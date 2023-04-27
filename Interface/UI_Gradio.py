@@ -9,8 +9,11 @@ from pydub import AudioSegment
 from tqdm import tqdm
 import soundfile as sf
 
-
 from collections import Counter
+from FYP.MusicGenreClassifier.Predict.inference_with_aggregate_single_track import predict
+from FYP.MusicGenreClassifier.CRNN.CRNN_biLSTM import NetworkModel
+from FYP.MusicGenreClassifier.DataPreprocessing.datasetmelspecprep import DatasetMelSpecPrep
+from FYP.MusicGenreClassifier.DataPreprocessing.chunks_to_CSV import chunks_to_CSV
 
 class_mapping = [
     "Black Metal",
@@ -27,17 +30,15 @@ class_mapping = [
     "Trance"
 ]
 
-from FYP.MusicGenreClassifier.Predict.inference_with_aggregate_single_track import predict
-from FYP.MusicGenreClassifier.CRNN.CRNN_biLSTM import NetworkModel
-from FYP.MusicGenreClassifier.DataPreprocessing.datasetmelspecprep import DatasetMelSpecPrep
-from FYP.MusicGenreClassifier.DataPreprocessing.chunks_to_CSV import chunks_to_CSV
 
 def get_file_path(audio_file, output_directory):
     # print(audio_file)
     if not os.path.exists(output_directory):
         os.mkdir(output_directory)
     sf.write(output_directory + "audio_test_file.wav", audio_file[1], samplerate=audio_file[0])
-    return(output_directory + "audio_test_file.wav")
+    return (output_directory + "audio_test_file.wav")
+
+
 def predict_vote(dmsp, progress=gr.Progress(track_tqdm=True)):
     predictions = []
     # print(len(dmsp))
@@ -49,9 +50,12 @@ def predict_vote(dmsp, progress=gr.Progress(track_tqdm=True)):
         predicted = predict(networkModel, input)
         predictions.append(class_mapping[predicted.argmax(0)])
 
+    print(predictions)
     top_predictions = Counter(predictions).most_common(3)
     print(top_predictions)
     top_predictions = [prediction[0] for prediction in top_predictions]
+    while len(top_predictions) < 3:
+        top_predictions.append("N/A")
 
     # for i in range(len(top_predictions)):
     #     top_predictions[i] = top_predictions[i][0].split("_")[0]
@@ -62,7 +66,6 @@ def predict_vote(dmsp, progress=gr.Progress(track_tqdm=True)):
 
 
 def split_audio(audio_track, output_directory):
-
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
@@ -98,7 +101,6 @@ def split_audio(audio_track, output_directory):
         end = start + chunk_length
         chunk = audio_track[start:end]
 
-
         output_filename = file_name + "_chunk_" + str("%02d" % (chunk_counter,)) + 'of' + str(
             "%02d" % (total_subgenre_track_chunks,)) + '.wav'
 
@@ -114,16 +116,18 @@ def split_audio(audio_track, output_directory):
         # print(f"file f{output_filename} in directory")
     return chunk_directory
 
-def file_prep(file, output_directory):
 
+def file_prep(file, output_directory):
     csv_path = output_directory + "prediction_track" + ".csv"
     if not os.path.exists(output_directory):
         os.mkdir(output_directory)
-    chunk_directory = split_audio(file, output_directory) #exports chunks to output_dir/chunk
+    chunk_directory = split_audio(file, output_directory)  # exports chunks to output_dir/chunk
     # print(csv_path)
     chunks_to_CSV(chunk_directory, csv_path, False)
     # print(chunk_directory, csv_path)
     return chunk_directory, csv_path
+
+
 def combined(audio_file, model_dir="/home/student/Music/1/FYP/MusicGenreClassifier/CRNN/CRNN_test/"):
     prediction_dir = "/home/student/Music/1/FYP/MusicGenreClassifier/Interface/predictions/"
     audio_file_path = get_file_path(audio_file, prediction_dir)
@@ -170,5 +174,18 @@ def combined(audio_file, model_dir="/home/student/Music/1/FYP/MusicGenreClassifi
     return prediction
 
 
-interface = gr.Interface(fn=combined, inputs="audio", outputs=["label", "label", "label"])
+description = "# Instructions: \n" \
+              'Upload an audio file and click "Submit"\n' \
+              "### Trained subgenres: \n " \
+              "Black metal, Death metal, Dreampop, Heavy metal, House, Post rock, Progressive rock, Punk rock, " \
+              "Synthwave, Techno, Thrash Metal, Trance" \
+              "\n"
+interface = gr.Interface(fn=combined,
+                         description=description,
+                         inputs=gr.Audio(label="Audio File"),
+                         outputs=[gr.Label(label="Top Prediction"),gr.Label(label="2nd Prediction"),gr.Label(label="3rd Prediction")],
+                         title="Music Subgenre Classifier",
+                         allow_flagging="never",
+                         theme="soft")
 interface.launch(share=True)
+
