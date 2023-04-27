@@ -8,19 +8,20 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 from inference_voting_multitrack import inference_voting_multitrack
 
+#DELETE song_predictions.csv if runing again, else will use existing to generate
 class_mapping = [
-    "black_metal",
-    "death_metal",
-    "dreampop_rock",
-    "heavy_metal",
-    "house_electronic",
-    "post_rock",
-    "progressive_rock",
-    "punk_rock",
-    "synthwave_electronic",
-    "techno_electronic",
-    "thrash_metal",
-    "trance_electronic"
+    "Black Metal",
+    "Death Metal",
+    "Dreampop",
+    "Heavy Metal",
+    "House",
+    "Post rock",
+    "Progressive rock",
+    "Punk rock",
+    "Synthwave",
+    "Techno",
+    "Thrash metal",
+    "Trance"
 ]
 
 if __name__ == "__main__":
@@ -42,10 +43,12 @@ if __name__ == "__main__":
 
     num_classes = len(class_mapping)
     df = pd.read_csv(song_predictions_csv)
+
+
+    # print(class_mapping)
+
+    df['prediction']=df['prediction'].apply(lambda  x: int(x[1:-1]))
     print(df.head())
-
-    print(class_mapping)
-
     cm = confusion_matrix(df['expected'].map(lambda x: class_mapping[x]),
                           df['prediction'].map(lambda x: class_mapping[x]), labels=class_mapping)
     print(cm)
