@@ -65,7 +65,7 @@ if __name__ == "__main__":
     plt.xlabel("Predicted")
     plt.ylabel("Truth")
 
-    title = 'song level prediction: ' + load_name
+    title = 'song level prediction- ' + load_name
     plt.title(title, y=1.05)
     plt.savefig(checkpoint_dir + title + "_confusion_matrix_voting.png")
     # plt.show()
