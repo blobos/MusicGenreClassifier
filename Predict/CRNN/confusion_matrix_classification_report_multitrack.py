@@ -26,8 +26,10 @@ class_mapping = [
 
 if __name__ == "__main__":
     checkpoint_dir = "../../CRNN/checkpoints/"
-    model_path = checkpoint_dir + "highest_val_acc.pth"
+    model_path = checkpoint_dir + "lowest_val_loss.pth"
     parameters = checkpoint_dir + "parameters.txt"
+    load_name = model_path.split("/")
+    load_name = load_name[-1].replace("_", " ").split(".")[0]
 
     audiofile_annotations = "/home/student/Music/1/FYP/data/test_annotations.csv"
     audiofile_dir = "/home/student/Music/1/FYP/data/test/chunks"
@@ -63,7 +65,7 @@ if __name__ == "__main__":
     plt.xlabel("Predicted")
     plt.ylabel("Truth")
 
-    title = 'song level prediction'
+    title = 'song level prediction: ' + load_name
     plt.title(title, y=1.05)
     plt.savefig(checkpoint_dir + title + "_confusion_matrix_voting.png")
     # plt.show()
