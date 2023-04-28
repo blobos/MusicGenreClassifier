@@ -33,10 +33,12 @@ class_mapping = [
 
 def get_file_path(audio_file, output_directory):
     # print(audio_file)
+    waveform = gr.make_waveform(audio_file, bg_color="#ffffff", bar_count=100, fg_alpha=0.5, bars_color=("#db2777", "#fbcfe8"))
     if not os.path.exists(output_directory):
         os.mkdir(output_directory)
+    #write audiofile locally as model input is path of file
     sf.write(output_directory + "audio_test_file.wav", audio_file[1], samplerate=audio_file[0])
-    return (output_directory + "audio_test_file.wav")
+    return (output_directory + "audio_test_file.wav"), waveform
 
 
 def predict_vote(dmsp, progress=gr.Progress(track_tqdm=True)):
@@ -130,10 +132,10 @@ def file_prep(file, output_directory):
 
 def combined(audio_file, model_dir="/home/student/Music/1/FYP/MusicGenreClassifier/CRNN/CRNN_test/"):
     prediction_dir = "/home/student/Music/1/FYP/MusicGenreClassifier/Interface/predictions/"
-    audio_file_path = get_file_path(audio_file, prediction_dir)
+    audio_file_path, waveform = get_file_path(audio_file, prediction_dir)
     print("audio file path:", audio_file_path)
     test_directory, csv_path = file_prep(audio_file_path, prediction_dir)
-    model_path = model_dir + "highest_val_acc.pth"
+    model_path = model_dir + "lowest_val_loss.pth"
     parameters = model_dir + "parameters.txt"
 
     with open(parameters, "r") as f:
@@ -171,21 +173,30 @@ def combined(audio_file, model_dir="/home/student/Music/1/FYP/MusicGenreClassifi
     prediction = predict_vote(dmsp)
     os.remove(audio_file_path)
     shutil.rmtree(prediction_dir)
-    return prediction
+    return waveform, prediction[0], prediction[1], prediction[2]
 
 
-description = "# Instructions: \n" \
-              'Upload an audio file and click "Submit"\n' \
-              "### Trained subgenres: \n " \
-              "Black metal, Death metal, Dreampop, Heavy metal, House, Post rock, Progressive rock, Punk rock, " \
-              "Synthwave, Techno, Thrash Metal, Trance" \
-              "\n"
+description = "# Instructions: \n"\
+                '&emsp;&emsp;Upload an audio file and click **Submit**\n'\
+                '&emsp;&emsp;Track length must 30 seconds or longer and bitrate of at least 44.1khz\n'\
+                '&emsp;&emsp;The predictions will only display subgenres that are included in the list at the bottom ' \
+              'of the page.'
+
+article = "## How it works:\n" \
+          "&emsp;&emsp;The audio file is split into 30 second truncated chunks and each chunk is run through an " \
+          "CRNN for individual predictions. The top 3 subgenre with the most predictions are then output.\n" \
+          "## Trained subgenres: \n " \
+          "&emsp;&emsp;**Metal**: Black metal, Death metal, Heavy metal, Thrash metal\n " \
+          "&emsp;&emsp;**Rock**: Dreampop, Post rock, Progressive rock, Punk rock\n" \
+          "&emsp;&emsp;**Electronic**: House, Synthwave, Techno, Trance"
+
 interface = gr.Interface(fn=combined,
                          description=description,
+                         article=article,
                          inputs=gr.Audio(label="Audio File"),
-                         outputs=[gr.Label(label="Top Prediction"),gr.Label(label="2nd Prediction"),gr.Label(label="3rd Prediction")],
+                         outputs=[gr.Video(label="Waveform"), gr.Label(label="Top Prediction"),gr.Label(label="2nd Prediction"),gr.Label(label="3rd Prediction")],
                          title="Music Subgenre Classifier",
                          allow_flagging="never",
-                         theme="soft")
+                         theme="ParityError/Anime")
 interface.launch(share=True)
 
