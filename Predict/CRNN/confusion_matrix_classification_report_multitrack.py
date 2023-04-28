@@ -10,10 +10,10 @@ from inference_voting_multitrack import inference_voting_multitrack
 
 #DELETE song_predictions.csv if runing again, else will use existing to generate
 class_mapping = [
-    "Black Metal",
-    "Death Metal",
+    "Black metal",
+    "Death metal",
     "Dreampop",
-    "Heavy Metal",
+    "Heavy metal",
     "House",
     "Post rock",
     "Progressive rock",
