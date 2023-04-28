@@ -20,8 +20,8 @@ Alternative Rock and Indie Rock subgenres removed due to perceived ambiguity in 
 
 
 ### CRNN model predictions results
-![training_log.txt_Loss.png](CRNN%2FCRNN_Final%2Ftraining_log.txt_Loss.png)
-![song level prediction: lowest val loss_confusion_matrix_voting.png](CRNN%2FCRNN_Final%2Fsong%20level%20prediction%3A%20lowest%20val%20loss_confusion_matrix_voting.png)
+![song level prediction- lowest val loss_confusion_matrix_voting.png](CRNN%2FCRNN%2Fsong%20level%20prediction-%20lowest%20val%20loss_confusion_matrix_voting.png)
+![training_log.txt_Loss.png](CRNN%2FCRNN%2Ftraining_log.txt_Loss.png)
 #### Classification Report:
                   precision    recall  f1-score   support
 
