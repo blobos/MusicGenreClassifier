@@ -7,7 +7,7 @@ from collections import Counter
 
 sys.path.append("")
 # from FYP.MusicGenreClassifier.CNN.Models.cnn_vgg19_leaky_relu_batchnorm_dropout import CNNNetwork
-from FYP.MusicGenreClassifier.CRNN.CRNN_test.CRNN_biLSTM import NetworkModel
+from FYP.MusicGenreClassifier.CRNN.CRNN.CRNN_biLSTM import NetworkModel
 from FYP.MusicGenreClassifier.DataPreprocessing.datasetmelspecprep import DatasetMelSpecPrep
 from FYP.MusicGenreClassifier.DataPreprocessing.chunks_to_CSV import chunks_to_CSV
 from FYP.MusicGenreClassifier.DataPreprocessing.track_to_chunks_single import split_audio

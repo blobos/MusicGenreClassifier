@@ -33,7 +33,7 @@ def predict(model, input):
     # print("prediction for ")
     model.eval()
     with torch.no_grad():
-        predictions = model(input[0].unsqueeze_(0)) #why unsqueeze
+        predictions = model(input[0].unsqueeze_(0))
         # Tensor (1, 10) -> [ [0.1, 0.01, ..., 0.6] ]
         # print("predict() predictions:", predictions)
         # print(predictions[0])

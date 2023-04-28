@@ -20,7 +20,7 @@ from sklearn.metrics import accuracy_score
 from torchsummary import summary
 
 
-
+#TODO: add load checkpoint (missing training accuracy)
 def train_single_epoch(model, data_loader, loss_fn, optimiser, device):
     progress_bar = tqdm(data_loader, desc='Training', unit='batch')
     # for input, target in data_loader:

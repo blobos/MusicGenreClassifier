@@ -1,7 +1,5 @@
 # Music Subgenre Classifier
-![Screenshot 2023-04-28 at 12-38-18 Music Subgenre Classifier.png](ReadMe%2FScreenshot%202023-04-28%20at%2012-38-18%20Music%20Subgenre%20Classifier.png)
-![Screenshot 2023-04-28 at 12-38-09 Music Subgenre Classifier.png](ReadMe%2FScreenshot%202023-04-28%20at%2012-38-09%20Music%20Subgenre%20Classifier.png)
-
+![Screenshot 2023-04-28 at 17-13-18 Music Subgenre Classifier.png](ReadMe%2FScreenshot%202023-04-28%20at%2017-13-18%20Music%20Subgenre%20Classifier.png)
 Dataset includes 5,546 Full length tracks (4800+ tracks from FMA Dataset (https://github.com/mdeff/fma)
 Unbalanced Dataset
 ### 12 Subgenres:
@@ -44,7 +42,8 @@ Alternative Rock and Indie Rock subgenres removed due to perceived ambiguity in 
            macro avg       0.52      0.49      0.49       327
         weighted avg       0.56      0.52      0.52       327
 
-
+# How it works:
+The CRNN is trained on 30 second chunks. At a 44.1khz sample rate, each chunk has 1291 time-steps or frames  
 # How to train:
 Audio Files should be enumerated per genre/subgenre and renamed to the following format:
 SubgenreTrackCounter_Subgenre_(FileName).extension
