@@ -64,7 +64,7 @@ ax2.set_xlabel("Epoch")
 ax2.legend()
 
 max_val_acc_row = df[df['Validation accuracy'] == df['Validation accuracy'].max()]
-max_val_acc_row = min_val_loss_row.sort_values('Validation loss', ascending=False)
+max_val_acc_row = max_val_acc_row.sort_values('Validation loss', ascending=False)
 print(max_val_acc_row)
 max_val_acc = max_val_acc_row.iloc[0]['Validation accuracy']
 print(max_val_acc)
