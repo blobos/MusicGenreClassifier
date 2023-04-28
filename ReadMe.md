@@ -2,7 +2,7 @@
 ![Screenshot 2023-04-28 at 12-38-18 Music Subgenre Classifier.png](ReadMe%2FScreenshot%202023-04-28%20at%2012-38-18%20Music%20Subgenre%20Classifier.png)
 ![Screenshot 2023-04-28 at 12-38-09 Music Subgenre Classifier.png](ReadMe%2FScreenshot%202023-04-28%20at%2012-38-09%20Music%20Subgenre%20Classifier.png)
 
-Dataset includes 6,887 Full length tracks (4800+ tracks from FMA Dataset (https://github.com/mdeff/fma)
+Dataset includes 5,546 Full length tracks (4800+ tracks from FMA Dataset (https://github.com/mdeff/fma)
 Unbalanced Dataset
 ### 12 Subgenres:
     Black metal (302 tracks),
