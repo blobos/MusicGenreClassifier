@@ -52,19 +52,23 @@ def predict_vote(dmsp, progress=gr.Progress(track_tqdm=True)):
         predicted = predict(networkModel, input)
         predictions.append(class_mapping[predicted.argmax(0)])
 
-    print(predictions)
-    top_predictions = Counter(predictions).most_common(3)
-    print(top_predictions)
-    top_predictions = [prediction[0] for prediction in top_predictions]
-    while len(top_predictions) < 3:
-        top_predictions.append("N/A")
+    # print(predictions)
+    top_predictions = Counter(predictions).most_common()
+    total_count = sum(count for _, count in top_predictions)
+    probabilities = {genre: count / total_count for genre, count in top_predictions}
+    probabilities = dict(probabilities)
+    # top_predictions = [str(prediction[0])+": "+str("%.2f" %(prediction[1]/len(predictions)*100)) + "%" for prediction in top_predictions]
+    # print(top_predictions)
+    # while len(top_predictions) < 3:
+    #     top_predictions.append("N/A")
+    # print(top_predictions)
 
     # for i in range(len(top_predictions)):
     #     top_predictions[i] = top_predictions[i][0].split("_")[0]
     #     top_predictions[i] = top_predictions[i][0].capitalize() + top_predictions[i][1:]
 
     # print("final class prediction:", top_predictions[0], top_predictions[1], top_predictions[2])
-    return top_predictions
+    return probabilities
 
 
 def split_audio(audio_track, output_directory):
@@ -130,7 +134,7 @@ def file_prep(file, output_directory):
     return chunk_directory, csv_path
 
 
-def combined(audio_file, model_dir="/home/student/Music/1/FYP/MusicGenreClassifier/CRNN/CRNN_test/"):
+def combined(audio_file, model_dir="/home/student/Music/1/FYP/MusicGenreClassifier/CRNN/checkpoints/"):
     prediction_dir = "/home/student/Music/1/FYP/MusicGenreClassifier/Interface/predictions/"
     audio_file_path, waveform = get_file_path(audio_file, prediction_dir)
     print("audio file path:", audio_file_path)
@@ -173,7 +177,7 @@ def combined(audio_file, model_dir="/home/student/Music/1/FYP/MusicGenreClassifi
     prediction = predict_vote(dmsp)
     os.remove(audio_file_path)
     shutil.rmtree(prediction_dir)
-    return waveform, prediction[0], prediction[1], prediction[2]
+    return waveform, prediction#[0], prediction[1], prediction[2]
 
 
 description = "# Instructions: \n"\
@@ -188,13 +192,14 @@ article = "## How it works:\n" \
           "## Trained subgenres: \n " \
           "&emsp;&emsp;**Metal**: Black metal, Death metal, Heavy metal, Thrash metal\n " \
           "&emsp;&emsp;**Rock**: Dreampop, Post rock, Progressive rock, Punk rock\n" \
-          "&emsp;&emsp;**Electronic**: House, Synthwave, Techno, Trance"
+          "&emsp;&emsp;**Electronic**: House, Synthwave, Techno, Trance\n" \
+          "*https://github.com/blobos/MusicGenreClassifier*"
 
 interface = gr.Interface(fn=combined,
                          description=description,
                          article=article,
                          inputs=gr.Audio(label="Audio File"),
-                         outputs=[gr.Video(label="Waveform"), gr.Label(label="Top Prediction"),gr.Label(label="2nd Prediction"),gr.Label(label="3rd Prediction")],
+                         outputs=[gr.Video(label="Waveform"), gr.Label(num_top_classes=11, label="Prediction")],#gr.Label(label="Prediction"),gr.Label(label="Prediction")],
                          title="Music Subgenre Classifier",
                          allow_flagging="never",
                          theme="ParityError/Anime")
