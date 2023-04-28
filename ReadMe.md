@@ -1,47 +1,50 @@
 # Music Subgenre Classifier
-![Screenshot from 2023-04-27 11-31-00.png](ReadMe%2FScreenshot%20from%202023-04-27%2011-31-00.png)
-![Screenshot from 2023-04-27 11-30-36.png](ReadMe%2FScreenshot%20from%202023-04-27%2011-30-36.png)
+![Screenshot 2023-04-28 at 12-38-18 Music Subgenre Classifier.png](ReadMe%2FScreenshot%202023-04-28%20at%2012-38-18%20Music%20Subgenre%20Classifier.png)
+![Screenshot 2023-04-28 at 12-38-09 Music Subgenre Classifier.png](ReadMe%2FScreenshot%202023-04-28%20at%2012-38-09%20Music%20Subgenre%20Classifier.png)
+
 Dataset includes 6,887 Full length tracks (4800+ tracks from FMA Dataset (https://github.com/mdeff/fma)
 Unbalanced Dataset
 ### 12 Subgenres:
-    "Black Metal",
-    "Death Metal",
-    "Dreampop",
-    "Heavy Metal",
-    "House",
-    "Post rock",
-    "Progressive rock",
-    "Punk rock",
-    "Synthwave",
-    "Techno",
-    "Thrash metal",
-    "Trance"
+    Black metal (302 tracks),
+    Death metal (395 tracks),
+    Dreampop/Shoegaze (853 tracks),
+    Heavy metal (203 tracks),
+    House (686 tracks),
+    Post rock (207 tracks),
+    Progressive rock (762 tracks),
+    Punk rock (762 tracks),
+    Synthwave (209 tracks),
+    Techno" (762 tracks),
+    Thrash metal (205 tracks),
+    Trance (200 tracks)
 
 Alternative Rock and Indie Rock subgenres removed due to perceived ambiguity in subgenre features by author
 
 
-CRNN model
+### CRNN model predictions results
 ![training_log.txt_Loss.png](CRNN%2FCRNN_Final%2Ftraining_log.txt_Loss.png)
-![song level prediction_confusion_matrix_voting.png](CRNN%2FCRNN_Final%2Fsong%20level%20prediction_confusion_matrix_voting.png)
+![song level prediction: lowest val loss_confusion_matrix_voting.png](CRNN%2FCRNN_Final%2Fsong%20level%20prediction%3A%20lowest%20val%20loss_confusion_matrix_voting.png)
 #### Classification Report:
-                      precision    recall  f1-score   support
+                  precision    recall  f1-score   support
 
-         Black Metal       0.43      0.18      0.25        17
-         Death Metal       0.50      0.75      0.60        16
-            Dreampop       0.55      0.45      0.49        49
-         Heavy Metal       0.48      0.86      0.62        28
-               House       0.64      0.78      0.70        54
-           Post rock       0.80      0.20      0.32        20
-    Progressive rock       0.13      0.33      0.19         9
-           Punk rock       0.83      0.42      0.56        45
-           Synthwave       0.86      0.50      0.63        24
-              Techno       0.33      0.49      0.39        35
-        Thrash metal       0.69      0.75      0.72        12
-              Trance       0.90      0.50      0.64        18
+         Black metal       0.21      0.18      0.19        17
+         Death metal       0.40      0.62      0.49        16
+            Dreampop       0.52      0.29      0.37        49
+         Heavy metal       0.45      0.68      0.54        28
+               House       0.69      0.74      0.71        54
+           Post rock       0.43      0.15      0.22        20
+    Progressive rock       0.08      0.22      0.11         9
+           Punk rock       0.77      0.53      0.63        45
+           Synthwave       0.68      0.54      0.60        24
+              Techno       0.39      0.60      0.47        35
+        Thrash metal       0.80      0.67      0.73        12
+              Trance       0.86      0.67      0.75        18
 
-            accuracy                           0.54       327
-           macro avg       0.59      0.52      0.51       327
-        weighted avg       0.61      0.54      0.54       327
+            accuracy                           0.52       327
+           macro avg       0.52      0.49      0.49       327
+        weighted avg       0.56      0.52      0.52       327
+
+
 # How to train:
 Audio Files should be enumerated per genre/subgenre and renamed to the following format:
 SubgenreTrackCounter_Subgenre_(FileName).extension

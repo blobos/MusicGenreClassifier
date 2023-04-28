@@ -1,0 +1,18 @@
+                  precision    recall  f1-score   support
+
+     Black metal       0.21      0.18      0.19        17
+     Death metal       0.40      0.62      0.49        16
+        Dreampop       0.52      0.29      0.37        49
+     Heavy metal       0.45      0.68      0.54        28
+           House       0.69      0.74      0.71        54
+       Post rock       0.43      0.15      0.22        20
+Progressive rock       0.08      0.22      0.11         9
+       Punk rock       0.77      0.53      0.63        45
+       Synthwave       0.68      0.54      0.60        24
+          Techno       0.39      0.60      0.47        35
+    Thrash metal       0.80      0.67      0.73        12
+          Trance       0.86      0.67      0.75        18
+
+        accuracy                           0.52       327
+       macro avg       0.52      0.49      0.49       327
+    weighted avg       0.56      0.52      0.52       327
